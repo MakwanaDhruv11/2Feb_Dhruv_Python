@@ -1,0 +1,11 @@
+django
+djangorestframework
+requests
+django-allauth
+twilio
+stripe
+python-dotenv
+googlemaps
+tweepy
+django-cors-headers
+django-filter
