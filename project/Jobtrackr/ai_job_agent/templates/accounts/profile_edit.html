@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Edit Profile - AI Job Agent{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center py-5 fade-in-up">
+    <div class="col-lg-8">
+        <div class="glass-card p-5">
+            <div class="d-flex align-items-center mb-5 pb-3 border-bottom border-secondary" style="border-color: rgba(255, 255, 255, 0.08) !important;">
+                <div class="rounded-3 bg-gradient d-inline-flex p-3 me-3" style="background: var(--gradient-accent);">
+                    <i class="bi bi-pencil-square text-white fs-4"></i>
+                </div>
+                <div>
+                    <h2 class="fw-bold mb-0">Edit Profile</h2>
+                    <p class="text-secondary mb-0">Modify your personal detail configuration</p>
+                </div>
+            </div>
+
+            <form method="post" novalidate>
+                {% csrf_token %}
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        {{ form.first_name|as_crispy_field }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        {{ form.last_name|as_crispy_field }}
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    {{ form.email|as_crispy_field }}
+                </div>
+                
+                <div class="mb-3">
+                    {{ form.phone_number|as_crispy_field }}
+                </div>
+                
+                <div class="mb-4">
+                    {{ form.bio|as_crispy_field }}
+                </div>
+
+                <div class="d-flex gap-3 justify-content-end">
+                    <a href="{% url 'accounts:profile' %}" class="btn btn-secondary bg-dark border-secondary px-4 py-2">Cancel</a>
+                    <button type="submit" class="btn btn-gradient px-4 py-2">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Override crispy forms labels & inputs for dark theme consistency */
+    .form-control, .form-select {
+        background-color: rgba(17, 24, 39, 0.6) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        color: #ffffff !important;
+        border-radius: 8px !important;
+        padding: 10px 14px !important;
+    }
+    .form-control:focus, .form-select:focus {
+        border-color: var(--primary-accent) !important;
+        box-shadow: 0 0 8px rgba(6, 182, 212, 0.2) !important;
+        background-color: rgba(17, 24, 39, 0.8) !important;
+    }
+    .form-label, .form-check-label {
+        color: var(--text-secondary) !important;
+        font-weight: 500;
+        margin-bottom: 6px;
+    }
+    .invalid-feedback {
+        color: var(--danger-accent) !important;
+    }
+</style>
+{% endblock %}

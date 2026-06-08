@@ -1,0 +1,182 @@
+{% extends 'base.html' %}
+
+{% block title %}Assisted Apply Console - AI Job Agent{% endblock %}
+
+{% block content %}
+<div class="row fade-in-up py-4">
+    <!-- Header -->
+    <div class="col-12 d-flex flex-wrap justify-content-between align-items-center mb-4">
+        <div>
+            <span class="badge bg-gradient px-3 py-1.5 text-uppercase mb-2 text-white" style="background: var(--gradient-accent);">Assisted Apply Helper</span>
+            <h1 class="fw-bold mb-1">{{ job.title }}</h1>
+            <p class="text-secondary mb-0">{{ job.company }} • {{ job.location|default:"Remote" }}</p>
+        </div>
+        <div class="mt-3 mt-md-0 d-flex gap-2">
+            <a href="{% url 'jobs:job_detail' job.pk %}" class="btn btn-outline-custom">Back to Job Details</a>
+            <a href="{{ job.url }}" target="_blank" class="btn btn-gradient px-4"><i class="bi bi-box-arrow-up-right me-2"></i> Launch Application Site</a>
+        </div>
+    </div>
+
+    <!-- Configuration Selector -->
+    <div class="col-12 mb-4">
+        <div class="glass-card p-3 d-flex flex-wrap gap-3 align-items-center">
+            <span class="text-secondary small fw-bold text-uppercase"><i class="bi bi-file-earmark-person me-1"></i> Reference Resume:</span>
+            <form method="get" class="d-flex gap-2 align-items-center">
+                <input type="hidden" name="job_id" value="{{ job.pk }}">
+                <select name="resume_id" onchange="this.form.submit()" class="form-select form-select-sm bg-dark border-secondary text-white py-1.5" style="min-width: 250px;">
+                    {% for r in resumes %}
+                        <option value="{{ r.pk }}" {% if active_resume.pk == r.pk %}selected{% endif %}>
+                            {{ r.parsed_data.name|default:r.file.name|truncatechars:40 }} ({{ r.uploaded_at|date:"M d" }})
+                        </option>
+                    {% endfor %}
+                </select>
+            </form>
+        </div>
+    </div>
+
+    <!-- Dual Pane Dashboard -->
+    <div class="col-lg-6 mb-4">
+        <!-- Copy Dashboard Panel -->
+        <div class="glass-card p-4 h-100">
+            <h3 class="h5 fw-bold text-white mb-4 border-bottom border-secondary pb-2" style="border-color: rgba(255, 255, 255, 0.05) !important;">
+                <i class="bi bi-clipboard-data text-info me-2"></i> Applicant Copy Console
+            </h3>
+            
+            <!-- Bio Info Fields -->
+            <div class="mb-4">
+                <h4 class="text-secondary small fw-bold text-uppercase mb-3">Personal Parameters</h4>
+                
+                <div class="d-grid gap-2">
+                    <!-- Name -->
+                    <div class="input-group">
+                        <span class="input-group-text bg-dark border-secondary text-secondary small" style="width: 100px;">Full Name</span>
+                        <input type="text" class="form-control bg-dark border-secondary text-white small" id="field_name" value="{{ apply_data.name }}" readonly>
+                        <button class="btn btn-outline-secondary border-secondary copy-field-btn" data-target="field_name"><i class="bi bi-clipboard"></i></button>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="input-group">
+                        <span class="input-group-text bg-dark border-secondary text-secondary small" style="width: 100px;">Email</span>
+                        <input type="text" class="form-control bg-dark border-secondary text-white small" id="field_email" value="{{ apply_data.email }}" readonly>
+                        <button class="btn btn-outline-secondary border-secondary copy-field-btn" data-target="field_email"><i class="bi bi-clipboard"></i></button>
+                    </div>
+
+                    <!-- Phone -->
+                    <div class="input-group">
+                        <span class="input-group-text bg-dark border-secondary text-secondary small" style="width: 100px;">Phone</span>
+                        <input type="text" class="form-control bg-dark border-secondary text-white small" id="field_phone" value="{{ apply_data.phone }}" readonly>
+                        <button class="btn btn-outline-secondary border-secondary copy-field-btn" data-target="field_phone"><i class="bi bi-clipboard"></i></button>
+                    </div>
+
+                    <!-- LinkedIn -->
+                    <div class="input-group">
+                        <span class="input-group-text bg-dark border-secondary text-secondary small" style="width: 100px;">LinkedIn</span>
+                        <input type="text" class="form-control bg-dark border-secondary text-white small" id="field_linkedin" value="{{ apply_data.linkedin }}" readonly>
+                        <button class="btn btn-outline-secondary border-secondary copy-field-btn" data-target="field_linkedin"><i class="bi bi-clipboard"></i></button>
+                    </div>
+
+                    <!-- GitHub -->
+                    <div class="input-group">
+                        <span class="input-group-text bg-dark border-secondary text-secondary small" style="width: 100px;">GitHub</span>
+                        <input type="text" class="form-control bg-dark border-secondary text-white small" id="field_github" value="{{ apply_data.github }}" readonly>
+                        <button class="btn btn-outline-secondary border-secondary copy-field-btn" data-target="field_github"><i class="bi bi-clipboard"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tailored Screening Questions -->
+            <div>
+                <h4 class="text-secondary small fw-bold text-uppercase mb-3">Tailored Screening Answers</h4>
+                <div class="d-grid gap-4">
+                    {% for item in apply_data.answers %}
+                        <div>
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="text-white small fw-bold">{{ item.question }}</span>
+                                <button class="btn btn-xs btn-outline-custom py-0.5 px-2 copy-text-btn" data-text="{{ item.answer }}" style="font-size: 0.7rem;"><i class="bi bi-clipboard me-1"></i> Copy Answer</button>
+                            </div>
+                            <div class="bg-dark p-3 rounded border border-secondary text-secondary small" style="background: rgba(0,0,0,0.15) !important; border-color: rgba(255,255,255,0.05) !important; line-height: 1.6;">
+                                {{ item.answer }}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Pane: Target Job Brief -->
+    <div class="col-lg-6 mb-4">
+        <div class="glass-card p-4 h-100 d-flex flex-column">
+            <h3 class="h5 fw-bold text-white mb-4 border-bottom border-secondary pb-2" style="border-color: rgba(255, 255, 255, 0.05) !important;">
+                <i class="bi bi-card-text text-info me-2"></i> Position Brief
+            </h3>
+            
+            <div class="flex-grow-1 overflow-auto pe-2" style="max-height: 500px;">
+                <div class="mb-4">
+                    <span class="text-secondary small fw-bold text-uppercase d-block mb-1">Source</span>
+                    <span class="badge bg-dark border border-secondary text-info px-2.5 py-1.5">{{ job.get_source_display }}</span>
+                </div>
+                
+                <div class="mb-4">
+                    <span class="text-secondary small fw-bold text-uppercase d-block mb-2">Primary Skills Checklist</span>
+                    <div class="d-flex flex-wrap gap-2">
+                        {% for skill in apply_data.skills|slice:":10" %}
+                            <span class="badge bg-info-subtle text-white border border-info px-2.5 py-1.5" style="background: rgba(6, 182, 212, 0.08) !important;">{{ skill }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div>
+                    <span class="text-secondary small fw-bold text-uppercase d-block mb-2">Requirements / Description</span>
+                    <p class="text-secondary small" style="line-height: 1.7; white-space: pre-line;">
+                        {{ job.description|truncatewords:200 }}
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Quick application workflow steps -->
+            <div class="mt-4 pt-3 border-top border-secondary" style="border-color: rgba(255, 255, 255, 0.05) !important;">
+                <h5 class="text-white small fw-bold mb-2">Instructions:</h5>
+                <ol class="text-secondary small ps-3 mb-0" style="line-height: 1.6;">
+                    <li>Select the reference resume from the dropdown configuration at the top.</li>
+                    <li>Click <strong>"Launch Application Site"</strong> to open the external job apply board.</li>
+                    <li>Use this console to instantly copy and paste names, credentials, links, and tailored answers.</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Copy input fields
+    document.querySelectorAll('.copy-field-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const inputId = this.getAttribute('data-target');
+            const input = document.getElementById(inputId);
+            input.select();
+            input.setSelectionRange(0, 99999);
+            navigator.clipboard.writeText(input.value).then(() => {
+                const icon = this.querySelector('i');
+                icon.className = 'bi bi-check2 text-success';
+                setTimeout(() => {
+                    icon.className = 'bi bi-clipboard';
+                }, 2000);
+            });
+        });
+    });
+
+    // Copy tailored answers block
+    document.querySelectorAll('.copy-text-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const text = this.getAttribute('data-text');
+            navigator.clipboard.writeText(text).then(() => {
+                const origHTML = this.innerHTML;
+                this.innerHTML = '<i class="bi bi-check2 text-success me-1"></i> Copied!';
+                setTimeout(() => {
+                    this.innerHTML = origHTML;
+                }, 2000);
+            });
+        });
+    });
+</script>
+{% endblock %}

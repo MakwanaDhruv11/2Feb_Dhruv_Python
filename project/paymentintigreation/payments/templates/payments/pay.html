@@ -1,0 +1,205 @@
+{% extends 'payments/base.html' %}
+
+{% block title %}PayNexus | Connecting Securely...{% endblock %}
+
+{% block extra_css %}
+.loader-card {
+    max-width: 550px;
+    margin: 2rem auto;
+    padding: 3rem 2rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+}
+
+.spinner-orbit {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.spinner-outer {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border: 4px solid transparent;
+    border-top-color: var(--primary);
+    border-bottom-color: var(--primary);
+    border-radius: 50%;
+    animation: rotate-clockwise 2s linear infinite;
+}
+
+.spinner-inner {
+    position: absolute;
+    width: 70%;
+    height: 70%;
+    border: 3px solid transparent;
+    border-left-color: #a855f7;
+    border-right-color: #a855f7;
+    border-radius: 50%;
+    animation: rotate-counter-clockwise 1.5s linear infinite;
+}
+
+.spinner-center {
+    color: var(--text-primary);
+    font-size: 1.5rem;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+.loader-title {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-top: 0.5rem;
+}
+
+.loader-text {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.5;
+    max-width: 380px;
+}
+
+.secure-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: rgba(16, 185, 129, 0.08);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    color: var(--success);
+    padding: 0.5rem 1rem;
+    border-radius: 30px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-top: 1rem;
+}
+
+@keyframes rotate-clockwise {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes rotate-counter-clockwise {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(-360deg); }
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.6; transform: scale(0.95); }
+    50% { opacity: 1; transform: scale(1.05); }
+}
+{% endblock %}
+
+{% block content %}
+<div class="glass-card loader-card">
+    
+    <div class="spinner-orbit">
+        <div class="spinner-outer"></div>
+        <div class="spinner-inner"></div>
+        <div class="spinner-center">
+            <i class="fa-solid fa-lock"></i>
+        </div>
+    </div>
+
+    <h2 class="loader-title">Opening Secure Gateway</h2>
+    <p class="loader-text">We are establishing an encrypted session with Razorpay. Please do not refresh, go back, or close this window.</p>
+    
+    <div class="secure-badge">
+        <i class="fa-solid fa-shield-halved"></i> PCI-DSS Compliant 256-bit SSL
+    </div>
+
+    <button id="rzp-button-manual" class="btn btn-secondary" style="margin-top: 1rem; font-size: 0.85rem; padding: 0.6rem 1.2rem; display: none;">
+        <i class="fa-solid fa-arrow-up-right-from-square"></i> Payment Window Didn't Open? Click Here
+    </button>
+</div>
+
+<!-- Hidden form to POST payment verification tokens back to our server callback -->
+<form id="payment-callback-form" action="{% url 'payment_callback' %}" method="POST" style="display: none;">
+    {% csrf_token %}
+    <input type="hidden" name="razorpay_payment_id" id="razorpay_payment_id">
+    <input type="hidden" name="razorpay_order_id" id="razorpay_order_id">
+    <input type="hidden" name="razorpay_signature" id="razorpay_signature">
+    <input type="hidden" name="error_reason" id="payment-error-reason">
+</form>
+
+<!-- Include Razorpay Checkout script -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Set up options object
+        var options = {
+            "key": "{{ razorpay_key_id }}",
+            "amount": "{{ amount_paise }}",
+            "currency": "INR",
+            "name": "PayNexus Premium",
+            "description": "{{ description }}",
+            "image": "https://img.icons8.com/color/120/000000/lightning-bolt.png", // Glowing bolt icon placeholder
+            "order_id": "{{ razorpay_order_id }}",
+            
+            // Payment success handler callback
+            "handler": function (response) {
+                // Populate token fields in hidden form and submit
+                document.getElementById('razorpay_payment_id').value = response.razorpay_payment_id;
+                document.getElementById('razorpay_order_id').value = response.razorpay_order_id;
+                document.getElementById('razorpay_signature').value = response.razorpay_signature;
+                document.getElementById('payment-callback-form').submit();
+            },
+            
+            // Prefill customer metadata
+            "prefill": {
+                "name": "{{ name }}",
+                "email": "{{ email }}"
+            },
+            
+            // Premium layout styles
+            "theme": {
+                "color": "#6366f1"
+            },
+            
+            // Standard handlers on modal dismissal or closure
+            "modal": {
+                "ondismiss": function() {
+                    // Redirect back to checkout home with cancelled status query
+                    window.location.href = "{% url 'checkout' %}?status=cancelled";
+                }
+            }
+        };
+
+        var rzp1 = new Razorpay(options);
+
+        // Standard payment failure callback
+        rzp1.on('payment.failed', function (response) {
+            document.getElementById('razorpay_payment_id').value = response.error.metadata.payment_id || '';
+            document.getElementById('razorpay_order_id').value = response.error.metadata.order_id || '';
+            document.getElementById('razorpay_signature').value = '';
+            document.getElementById('payment-error-reason').value = response.error.description || 'Payment Failed';
+            document.getElementById('payment-callback-form').submit();
+        });
+
+        // Try auto-opening
+        try {
+            rzp1.open();
+        } catch (e) {
+            console.error("Razorpay auto-open failed: ", e);
+        }
+
+        // Show manual button after 3 seconds in case popups blocked
+        setTimeout(function() {
+            var btn = document.getElementById('rzp-button-manual');
+            if (btn) {
+                btn.style.display = 'inline-flex';
+                btn.onclick = function() {
+                    rzp1.open();
+                };
+            }
+        }, 3000);
+    });
+</script>
+{% endblock %}

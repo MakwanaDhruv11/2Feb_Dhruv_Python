@@ -1,0 +1,477 @@
+{% extends 'payments/base.html' %}
+
+{% block title %}PayNexus | Secure Premium Checkout{% endblock %}
+
+{% block extra_css %}
+.checkout-wrapper {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 2.5rem;
+    align-items: start;
+}
+
+@media (max-width: 968px) {
+    .checkout-wrapper {
+        grid-template-columns: 1fr;
+    }
+}
+
+.section-title {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 1.75rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.5px;
+    background: linear-gradient(120deg, #ffffff 40%, var(--text-secondary) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.section-subtitle {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    margin-bottom: 2rem;
+}
+
+/* Plan Selection Cards */
+.plans-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+}
+
+.plan-card {
+    cursor: pointer;
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.plan-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: transparent;
+    transition: background 0.3s;
+}
+
+.plan-card.active {
+    border-color: var(--primary);
+    box-shadow: 0 10px 30px var(--primary-glow);
+    transform: translateY(-4px);
+    background: rgba(99, 102, 241, 0.05);
+}
+
+.plan-card.active::before {
+    background: var(--primary);
+}
+
+.plan-card:hover:not(.active) {
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+.plan-header {
+    margin-bottom: 1.25rem;
+}
+
+.plan-name {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+}
+
+.plan-price {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    display: flex;
+    align-items: baseline;
+    gap: 0.25rem;
+}
+
+.plan-price span {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.plan-features {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-top: auto;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--card-border);
+}
+
+.plan-features li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.plan-features li i {
+    color: var(--success);
+    font-size: 0.9rem;
+}
+
+/* Custom Donation Section */
+.custom-donation-trigger {
+    padding: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    margin-bottom: 2rem;
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.custom-donation-trigger:hover {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.custom-donation-trigger.active {
+    border-color: var(--primary);
+    background: rgba(99, 102, 241, 0.05);
+}
+
+.custom-donation-trigger .icon-wrapper {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: rgba(168, 85, 247, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #a855f7;
+    font-size: 1.1rem;
+}
+
+.custom-donation-trigger .text-wrapper {
+    flex: 1;
+    margin-left: 1rem;
+    text-align: left;
+}
+
+.custom-donation-trigger .title {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+.custom-donation-trigger .desc {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+/* Form Container */
+.checkout-form-card {
+    padding: 2.25rem;
+    position: sticky;
+    top: 2rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-wrapper i {
+    position: absolute;
+    left: 1rem;
+    color: var(--text-muted);
+    font-size: 1rem;
+    transition: color 0.3s;
+}
+
+.form-control {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--card-border);
+    padding: 0.9rem 1rem 0.9rem 2.7rem;
+    border-radius: 12px;
+    color: var(--text-primary);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--primary);
+    background: rgba(255, 255, 255, 0.04);
+    box-shadow: 0 0 0 4px var(--primary-glow);
+}
+
+.form-control:focus + i {
+    color: var(--primary);
+}
+
+/* Custom amount input transition */
+.custom-amount-container {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease, margin-bottom 0.3s ease;
+}
+
+.custom-amount-container.show {
+    max-height: 120px;
+    opacity: 1;
+    margin-bottom: 1.5rem;
+}
+
+.checkout-summary {
+    background: rgba(255, 255, 255, 0.02);
+    border-top: 1px solid var(--card-border);
+    padding-top: 1.5rem;
+    margin-top: 1.5rem;
+    border-radius: 10px;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    font-size: 0.9rem;
+}
+
+.summary-row.total {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    border-top: 1px dashed var(--card-border);
+    padding-top: 1rem;
+    margin-top: 0.5rem;
+    margin-bottom: 0;
+}
+{% endblock %}
+
+{% block content %}
+<div class="checkout-wrapper">
+    
+    <!-- LEFT PANEL: Plan selection -->
+    <div>
+        <h2 class="section-title">Upgrade Your Experience</h2>
+        <p class="section-subtitle">Select a premium membership plan below or choose a custom payment amount.</p>
+        
+        <div class="plans-grid">
+            {% for key, product in products.items %}
+                <div class="glass-card plan-card {% if key == 'premium' %}active{% endif %}" data-plan-key="{{ key }}" data-price="{{ product.price }}" onclick="selectPlan(this)">
+                    <div class="plan-header">
+                        <h3 class="plan-name">{{ product.name }}</h3>
+                        <div class="plan-price">₹{{ product.price|floatformat:0 }}<span>/one-time</span></div>
+                    </div>
+                    <ul class="plan-features">
+                        {% for feature in product.features %}
+                            <li><i class="fa-solid fa-circle-check"></i> {{ feature }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="glass-card custom-donation-trigger" id="custom-trigger" onclick="toggleCustomDonation()">
+            <div class="icon-wrapper">
+                <i class="fa-solid fa-hand-holding-heart"></i>
+            </div>
+            <div class="text-wrapper">
+                <h4 class="title">Pay Custom Amount</h4>
+                <p class="desc">Enter any amount to contribute, support, or tip custom fee.</p>
+            </div>
+            <div class="radio-indicator">
+                <i class="fa-regular fa-circle" id="custom-radio-icon" style="font-size: 1.25rem; color: var(--text-muted);"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- RIGHT PANEL: Checkout details -->
+    <div>
+        <div class="glass-card checkout-form-card">
+            <h3 class="section-title" style="font-size: 1.4rem; margin-bottom: 1.5rem;"><i class="fa-solid fa-credit-card" style="color: var(--primary);"></i> Checkout Details</h3>
+            
+            <form id="payment-form" action="{% url 'initiate_payment' %}" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="product_key" id="selected-product-key" value="premium">
+                
+                <div class="form-group">
+                    <label for="id_name">Your Name</label>
+                    <div class="input-wrapper">
+                        <input type="text" name="name" id="id_name" class="form-control" placeholder="John Doe" required>
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="id_email">Email Address</label>
+                    <div class="input-wrapper">
+                        <input type="email" name="email" id="id_email" class="form-control" placeholder="john@example.com" required>
+                        <i class="fa-solid fa-envelope"></i>
+                    </div>
+                </div>
+
+                <!-- Custom Amount input (initially hidden) -->
+                <div class="form-group custom-amount-container" id="custom-amount-box">
+                    <label for="id_custom_amount">Enter Custom Amount (INR)</label>
+                    <div class="input-wrapper">
+                        <input type="number" name="custom_amount" id="id_custom_amount" class="form-control" min="1" step="any" placeholder="500.00" oninput="updateSummary()">
+                        <i class="fa-solid fa-indian-rupee-sign"></i>
+                    </div>
+                </div>
+
+                <!-- Order Summary Breakdown -->
+                <div class="checkout-summary">
+                    <div class="summary-row">
+                        <span style="color: var(--text-secondary);">Selection</span>
+                        <span id="summary-selection-name" style="font-weight: 600;">Growth Plan</span>
+                    </div>
+                    <div class="summary-row">
+                        <span style="color: var(--text-secondary);">Subtotal</span>
+                        <span id="summary-subtotal">₹999.00</span>
+                    </div>
+                    <div class="summary-row">
+                        <span style="color: var(--text-secondary);">Gateway Charges</span>
+                        <span style="color: var(--success); font-weight: 500;">Free</span>
+                    </div>
+                    <div class="summary-row total">
+                        <span>Total Due</span>
+                        <span id="summary-total-price">₹999.00</span>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1.5rem; height: 50px;">
+                    <i class="fa-solid fa-shield-halved"></i> Secure Checkout
+                </button>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // Product data reference
+    const productsData = {
+        'basic': { name: 'Starter Plan', price: 299 },
+        'premium': { name: 'Growth Plan', price: 999 },
+        'enterprise': { name: 'Scale Plan', price: 2999 }
+    };
+
+    let isCustomAmountMode = false;
+
+    function selectPlan(cardElement) {
+        // Disengage custom mode
+        if (isCustomAmountMode) {
+            toggleCustomDonation(false);
+        }
+
+        // Deactivate other cards
+        document.querySelectorAll('.plan-card').forEach(card => card.classList.remove('active'));
+        
+        // Activate current card
+        cardElement.classList.add('active');
+        
+        const planKey = cardElement.getAttribute('data-plan-key');
+        document.getElementById('selected-product-key').value = planKey;
+        
+        updateSummary();
+    }
+
+    function toggleCustomDonation(forceState = null) {
+        const trigger = document.getElementById('custom-trigger');
+        const radioIcon = document.getElementById('custom-radio-icon');
+        const customBox = document.getElementById('custom-amount-box');
+        const customInput = document.getElementById('id_custom_amount');
+
+        // Determine next state
+        isCustomAmountMode = (forceState !== null) ? forceState : !isCustomAmountMode;
+
+        if (isCustomAmountMode) {
+            // Deactivate all cards
+            document.querySelectorAll('.plan-card').forEach(card => card.classList.remove('active'));
+            
+            // Activate custom donation row
+            trigger.classList.add('active');
+            radioIcon.className = "fa-solid fa-circle-dot";
+            radioIcon.style.color = "var(--primary)";
+            
+            // Open custom amount input drawer
+            customBox.classList.add('show');
+            customInput.setAttribute('required', 'required');
+            document.getElementById('selected-product-key').value = "custom";
+            
+            customInput.focus();
+        } else {
+            // Deactivate custom donation row
+            trigger.classList.remove('active');
+            radioIcon.className = "fa-regular fa-circle";
+            radioIcon.style.color = "var(--text-muted)";
+            
+            // Close custom amount input drawer
+            customBox.classList.remove('show');
+            customInput.removeAttribute('required');
+            customInput.value = "";
+        }
+
+        updateSummary();
+    }
+
+    function updateSummary() {
+        const selectionName = document.getElementById('summary-selection-name');
+        const subtotalText = document.getElementById('summary-subtotal');
+        const totalText = document.getElementById('summary-total-price');
+
+        if (isCustomAmountMode) {
+            const val = parseFloat(document.getElementById('id_custom_amount').value) || 0;
+            selectionName.innerText = "Custom Payment";
+            subtotalText.innerText = "₹" + val.toFixed(2);
+            totalText.innerText = "₹" + val.toFixed(2);
+        } else {
+            const activeCard = document.querySelector('.plan-card.active');
+            if (activeCard) {
+                const key = activeCard.getAttribute('data-plan-key');
+                const prod = productsData[key];
+                selectionName.innerText = prod.name;
+                subtotalText.innerText = "₹" + prod.price.toFixed(2);
+                totalText.innerText = "₹" + prod.price.toFixed(2);
+            } else {
+                // Default if nothing selected
+                selectionName.innerText = "--";
+                subtotalText.innerText = "₹0.00";
+                totalText.innerText = "₹0.00";
+            }
+        }
+    }
+</script>
+{% endblock %}

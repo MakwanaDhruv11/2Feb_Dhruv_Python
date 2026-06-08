@@ -1,0 +1,24 @@
+<footer class="bg-cyber-dark border-t border-white/10 py-12 px-6">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
+        <div class="text-center md:text-left">
+            <h3 class="font-orbitron text-2xl text-cyber-neon mb-2">ANTIGRAVITY</h3>
+            <p class="text-white/50 text-sm">Futuristic Portfolio System v1.0.4</p>
+        </div>
+        
+        <div class="flex gap-6 text-2xl">
+            {% for social in socials %}
+            <a href="{{ social.url }}" target="_blank" class="text-white/60 hover:text-cyber-neon transition-all hover:-translate-y-1">
+                <i class="{{ social.icon_class }}"></i>
+            </a>
+            {% empty %}
+            <a href="#" class="text-white/60 hover:text-cyber-neon transition-all hover:-translate-y-1"><i class="fab fa-github"></i></a>
+            <a href="#" class="text-white/60 hover:text-cyber-neon transition-all hover:-translate-y-1"><i class="fab fa-linkedin"></i></a>
+            <a href="#" class="text-white/60 hover:text-cyber-neon transition-all hover:-translate-y-1"><i class="fab fa-instagram"></i></a>
+            {% endfor %}
+        </div>
+        
+        <div class="text-white/40 text-xs font-orbitron">
+            &copy; 2026 ANTIGRAVITY. ALL RIGHTS RESERVED.
+        </div>
+    </div>
+</footer>

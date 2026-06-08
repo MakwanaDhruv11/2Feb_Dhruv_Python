@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Cover Letter - {{ letter.job.title }} at {{ letter.job.company }} - AI Job Agent{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center py-4 fade-in-up">
+    <!-- Header -->
+    <div class="col-lg-10 d-flex flex-wrap justify-content-between align-items-center mb-5">
+        <div>
+            <h1 class="fw-bold mb-1"><i class="bi bi-file-earmark-word text-info me-2"></i> Tailored Cover Letter</h1>
+            <p class="text-secondary mb-0">Generated for {{ letter.job.title }} at {{ letter.job.company }}</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{% url 'automation:cover_letter_list' %}" class="btn btn-outline-custom">All Letters</a>
+            <button id="copyBtn" class="btn btn-gradient"><i class="bi bi-clipboard me-2"></i> Copy to Clipboard</button>
+        </div>
+    </div>
+
+    <!-- Letter Body -->
+    <div class="col-lg-10">
+        <div class="glass-card p-5">
+            <div id="letterText" class="text-secondary fs-6" style="white-space: pre-line; line-height: 1.8; font-family: 'Courier New', Courier, monospace;">
+                {{ letter.content }}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('copyBtn').addEventListener('click', function() {
+        const text = document.getElementById('letterText').innerText;
+        navigator.clipboard.writeText(text).then(function() {
+            const btn = document.getElementById('copyBtn');
+            const origHTML = btn.innerHTML;
+            btn.innerHTML = '<i class="bi bi-check2-all me-2"></i> Copied!';
+            btn.classList.replace('btn-gradient', 'btn-success');
+            setTimeout(function() {
+                btn.innerHTML = origHTML;
+                btn.classList.replace('btn-success', 'btn-gradient');
+            }, 2500);
+        }).catch(function(err) {
+            console.error('Copy failed: ', err);
+            alert('Failed to copy text automatically. Please select and copy manually.');
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,33 @@
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Section transitions */
+section {
+    position: relative;
+    z-index: 10;
+}
+
+/* Glassmorphism utility */
+.glass-heavy {
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(0, 242, 255, 0.1);
+}
+
+/* Button glow effect */
+.btn-glow:hover {
+    box-shadow: 0 0 20px rgba(0, 242, 255, 0.6);
+}
+
+/* Responsive fixes */
+@media (max-width: 768px) {
+    .font-orbitron {
+        letter-spacing: 0.1em !important;
+    }
+}

@@ -1,0 +1,209 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - AI Job Agent{% endblock %}
+
+{% block content %}
+<div class="row fade-in-up py-4">
+    <!-- Header -->
+    <div class="col-12 mb-5">
+        <h1 class="fw-bold mb-1"><i class="bi bi-speedometer2 text-info me-2"></i> User Dashboard</h1>
+        <p class="text-secondary mb-0">Welcome back, {{ user.username }}! Track your resumes, discover job boards, and monitor AI matches.</p>
+    </div>
+
+    <!-- Metrics Cards Row -->
+    <div class="col-12 mb-5">
+        <div class="row g-4">
+            <!-- Resumes -->
+            <div class="col-6 col-lg-3">
+                <div class="glass-card p-4 text-center h-100 d-flex flex-column justify-content-center">
+                    <div class="rounded-3 bg-info-subtle text-info d-inline-flex p-3 mx-auto mb-3" style="background: rgba(6, 182, 212, 0.08) !important;">
+                        <i class="bi bi-file-earmark-person fs-3"></i>
+                    </div>
+                    <span class="text-secondary small fw-bold text-uppercase">My Resumes</span>
+                    <h2 class="fw-bold text-white mt-1 mb-0">{{ resumes_count }}</h2>
+                    <a href="{% url 'resumes:resume_list' %}" class="small text-info text-decoration-none mt-2 d-block hover-white">Manage Resumes <i class="bi bi-arrow-right small"></i></a>
+                </div>
+            </div>
+
+            <!-- Jobs -->
+            <div class="col-6 col-lg-3">
+                <div class="glass-card p-4 text-center h-100 d-flex flex-column justify-content-center">
+                    <div class="rounded-3 bg-primary-subtle text-primary d-inline-flex p-3 mx-auto mb-3" style="background: rgba(59, 130, 246, 0.08) !important;">
+                        <i class="bi bi-briefcase fs-3"></i>
+                    </div>
+                    <span class="text-secondary small fw-bold text-uppercase">Jobs Discovered</span>
+                    <h2 class="fw-bold text-white mt-1 mb-0">{{ jobs_count }}</h2>
+                    <a href="{% url 'jobs:job_list' %}" class="small text-info text-decoration-none mt-2 d-block hover-white">Discover Jobs <i class="bi bi-arrow-right small"></i></a>
+                </div>
+            </div>
+
+            <!-- Saved -->
+            <div class="col-6 col-lg-3">
+                <div class="glass-card p-4 text-center h-100 d-flex flex-column justify-content-center">
+                    <div class="rounded-3 bg-warning-subtle text-warning d-inline-flex p-3 mx-auto mb-3" style="background: rgba(245, 158, 11, 0.08) !important;">
+                        <i class="bi bi-bookmark-star fs-3"></i>
+                    </div>
+                    <span class="text-secondary small fw-bold text-uppercase">Saved Positions</span>
+                    <h2 class="fw-bold text-white mt-1 mb-0">{{ saved_count }}</h2>
+                    <a href="{% url 'core:saved_jobs' %}" class="small text-info text-decoration-none mt-2 d-block hover-white">View Bookmarks <i class="bi bi-arrow-right small"></i></a>
+                </div>
+            </div>
+
+            <!-- Applied -->
+            <div class="col-6 col-lg-3">
+                <div class="glass-card p-4 text-center h-100 d-flex flex-column justify-content-center">
+                    <div class="rounded-3 bg-success-subtle text-success d-inline-flex p-3 mx-auto mb-3" style="background: rgba(16, 185, 129, 0.08) !important;">
+                        <i class="bi bi-send fs-3"></i>
+                    </div>
+                    <span class="text-secondary small fw-bold text-uppercase">Applications</span>
+                    <h2 class="fw-bold text-white mt-1 mb-0">{{ applied_count }}</h2>
+                    <a href="{% url 'core:applied_jobs' %}" class="small text-info text-decoration-none mt-2 d-block hover-white">Track Progress <i class="bi bi-arrow-right small"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Secondary Row: AI Match Analytics & Quick Actions -->
+    <div class="col-lg-8 mb-4">
+        <!-- Recent Matches -->
+        <div class="glass-card p-4 mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3 class="h5 fw-bold text-white mb-0"><i class="bi bi-suit-heart text-info me-2"></i> Recent AI Matches</h3>
+                <a href="{% url 'core:matched_jobs' %}" class="text-info text-decoration-none small hover-white">View All Matches <i class="bi bi-arrow-right"></i></a>
+            </div>
+            
+            {% if recent_matches %}
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover align-middle mb-0" style="background: transparent;">
+                        <thead>
+                            <tr class="text-secondary small text-uppercase" style="border-bottom: 1.5px solid rgba(255,255,255,0.05);">
+                                <th scope="col">Job Title</th>
+                                <th scope="col">Company</th>
+                                <th scope="col">Match Score</th>
+                                <th scope="col" class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for match in recent_matches %}
+                                <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                    <td class="text-white fw-bold">{{ match.job.title }}</td>
+                                    <td class="text-secondary">{{ match.job.company }}</td>
+                                    <td>
+                                        {% if match.match_score >= 80 %}
+                                            <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1">{{ match.match_score }}% Match</span>
+                                        {% elif match.match_score >= 60 %}
+                                            <span class="badge bg-warning-subtle text-warning border border-warning-subtle px-2 py-1">{{ match.match_score }}% Match</span>
+                                        {% else %}
+                                            <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1">{{ match.match_score }}% Match</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-end">
+                                        <a href="{% url 'jobs:job_detail' match.job.pk %}" class="btn btn-sm btn-outline-custom">View</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="text-secondary mb-0">No job match scores computed yet. Upload a resume and start matching discovered job postings!</p>
+            {% endif %}
+        </div>
+
+        <!-- Recent Applications -->
+        <div class="glass-card p-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3 class="h5 fw-bold text-white mb-0"><i class="bi bi-send text-success me-2"></i> Active Applications</h3>
+                <a href="{% url 'core:applied_jobs' %}" class="text-info text-decoration-none small hover-white">View Tracker <i class="bi bi-arrow-right"></i></a>
+            </div>
+
+            {% if recent_applications %}
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover align-middle mb-0" style="background: transparent;">
+                        <thead>
+                            <tr class="text-secondary small text-uppercase" style="border-bottom: 1.5px solid rgba(255,255,255,0.05);">
+                                <th scope="col">Position</th>
+                                <th scope="col">Company</th>
+                                <th scope="col">Status</th>
+                                <th scope="col" class="text-end">Applied Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for app in recent_applications %}
+                                <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                    <td class="text-white fw-bold">{{ app.job.title }}</td>
+                                    <td class="text-secondary">{{ app.job.company }}</td>
+                                    <td>
+                                        {% if app.status == 'applied' %}
+                                            <span class="badge bg-info-subtle text-info border border-info-subtle px-2 py-1 rounded-pill">Applied</span>
+                                        {% elif app.status == 'interviewing' %}
+                                            <span class="badge bg-warning-subtle text-warning border border-warning-subtle px-2 py-1 rounded-pill">Interviewing</span>
+                                        {% elif app.status == 'offered' %}
+                                            <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1 rounded-pill">Offered</span>
+                                        {% elif app.status == 'rejected' %}
+                                            <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1 rounded-pill">Rejected</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary-subtle text-white border border-secondary px-2 py-1 rounded-pill">{{ app.get_status_display }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-secondary text-end small">{{ app.applied_at|date:"M d, Y" }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="text-secondary mb-0">You are not tracking any active job applications. Mark jobs as applied to track progress.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Quick Shortcuts sidebar -->
+    <div class="col-lg-4">
+        <!-- Average Match Score progress bar -->
+        <div class="glass-card p-4 mb-4 text-center">
+            <h4 class="h6 text-secondary text-uppercase fw-bold mb-4">Average Match Rating</h4>
+            
+            <div class="my-4">
+                <span class="fs-1 fw-bold text-info">{{ avg_match_score }}%</span>
+                <p class="text-secondary small mt-1 mb-3">Overall match performance</p>
+                <div class="progress bg-dark border border-secondary rounded-pill mb-2" style="height: 12px;">
+                    <div class="progress-bar bg-info" role="progressbar" style="width: {{ avg_match_score }}%" aria-valuenow="{{ avg_match_score }}" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+            </div>
+            <p class="text-secondary small mb-0">Average matching index calculated across your matches</p>
+        </div>
+
+        <!-- Shortcuts Card -->
+        <div class="glass-card p-4">
+            <h4 class="h5 mb-4 text-white">Agent Actions</h4>
+            
+            <div class="d-grid gap-3">
+                <a href="{% url 'resumes:resume_upload' %}" class="btn btn-outline-custom text-start py-3 px-3 d-flex align-items-center">
+                    <i class="bi bi-file-earmark-arrow-up text-info fs-4 me-3"></i>
+                    <div>
+                        <span class="d-block fw-bold text-white">Upload Baseline Resume</span>
+                        <span class="text-secondary small">Feed raw profile data to AI</span>
+                    </div>
+                </a>
+
+                <a href="{% url 'jobs:job_list' %}" class="btn btn-outline-custom text-start py-3 px-3 d-flex align-items-center">
+                    <i class="bi bi-compass text-info fs-4 me-3"></i>
+                    <div>
+                        <span class="d-block fw-bold text-white">Explore Jobs Board</span>
+                        <span class="text-secondary small">Search listings across pipelines</span>
+                    </div>
+                </a>
+
+                <a href="{% url 'core:settings' %}" class="btn btn-outline-custom text-start py-3 px-3 d-flex align-items-center">
+                    <i class="bi bi-cpu text-info fs-4 me-3"></i>
+                    <div>
+                        <span class="d-block fw-bold text-white">Agent Credentials</span>
+                        <span class="text-secondary small">Configure API keys & controls</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

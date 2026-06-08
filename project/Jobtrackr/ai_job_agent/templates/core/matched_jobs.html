@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+
+{% block title %}AI Job Matches - AI Job Agent{% endblock %}
+
+{% block content %}
+<div class="row fade-in-up py-4">
+    <!-- Header -->
+    <div class="col-12 d-flex flex-wrap justify-content-between align-items-center mb-5">
+        <div>
+            <h1 class="fw-bold mb-1"><i class="bi bi-suit-heart text-info me-2"></i> AI Job Matches</h1>
+            <p class="text-secondary mb-0">Evaluate matches, missing skills, and detailed AI analysis across discovered jobs</p>
+        </div>
+        <div>
+            <a href="{% url 'jobs:job_list' %}" class="btn btn-gradient"><i class="bi bi-search me-2"></i> Discover More Jobs</a>
+        </div>
+    </div>
+
+    <!-- Match Cards -->
+    <div class="col-12">
+        {% if matches %}
+            <div class="row g-4">
+                {% for match in matches %}
+                    <div class="col-md-6">
+                        <div class="glass-card p-4 h-100 d-flex flex-column">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div>
+                                    <h4 class="h5 text-white fw-bold mb-1">{{ match.job.title }}</h4>
+                                    <p class="text-secondary small mb-0">{{ match.job.company }} • {{ match.job.location|default:"Remote" }}</p>
+                                </div>
+                                <div>
+                                    {% if match.match_score >= 80 %}
+                                        <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-1.5 fs-6">{{ match.match_score }}% Match</span>
+                                    {% elif match.match_score >= 60 %}
+                                        <span class="badge bg-warning-subtle text-warning border border-warning-subtle px-3 py-1.5 fs-6">{{ match.match_score }}% Match</span>
+                                    {% else %}
+                                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-1.5 fs-6">{{ match.match_score }}% Match</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <!-- Analysis snippet -->
+                            <div class="my-3 flex-grow-1">
+                                <span class="text-secondary d-block small mb-1 fw-bold">Agent Explanation</span>
+                                <p class="text-secondary small mb-3 text-truncate-3" style="line-height: 1.5;">
+                                    {{ match.match_explanation|default:"No description provided." }}
+                                </p>
+                                
+                                <!-- Skills comparison -->
+                                <div class="row g-2 mt-2">
+                                    <div class="col-6">
+                                        <span class="text-success d-block small mb-1"><i class="bi bi-patch-check-fill me-1"></i> Matched ({{ match.skills_matched|length }})</span>
+                                        <div class="d-flex flex-wrap gap-1">
+                                            {% for sk in match.skills_matched|slice:":3" %}
+                                                <span class="badge bg-success-subtle text-success border border-success-subtle" style="font-size: 0.65rem;">{{ sk }}</span>
+                                            {% empty %}
+                                                <span class="text-secondary small">None</span>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <span class="text-warning d-block small mb-1"><i class="bi bi-exclamation-triangle-fill me-1"></i> Missing ({{ match.skills_missing|length }})</span>
+                                        <div class="d-flex flex-wrap gap-1">
+                                            {% for sk in match.skills_missing|slice:":3" %}
+                                                <span class="badge bg-warning-subtle text-warning border border-warning-subtle" style="font-size: 0.65rem;">{{ sk }}</span>
+                                            {% empty %}
+                                                <span class="text-secondary small">None</span>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex gap-2 mt-4 pt-3 border-top border-secondary" style="border-color: rgba(255, 255, 255, 0.05) !important;">
+                                <a href="{% url 'jobs:job_detail' match.job.pk %}" class="btn btn-sm btn-outline-custom w-50">Job Details</a>
+                                <a href="{{ match.job.url }}" target="_blank" class="btn btn-sm btn-gradient w-50">Apply Now</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            
+            <!-- Pagination -->
+            {% if is_paginated %}
+                <nav class="mt-5 d-flex justify-content-center">
+                    <ul class="pagination">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item"><a class="page-link bg-dark border-secondary text-info" href="?page=1">&laquo; First</a></li>
+                            <li class="page-item"><a class="page-link bg-dark border-secondary text-info" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
+                        {% endif %}
+                        <li class="page-item active">
+                            <span class="page-link bg-gradient border-0 text-white">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                        </li>
+                        {% if page_obj.has_next %}
+                            <li class="page-item"><a class="page-link bg-dark border-secondary text-info" href="?page={{ page_obj.next_page_number }}">Next</a></li>
+                            <li class="page-item"><a class="page-link bg-dark border-secondary text-info" href="?page={{ page_obj.paginator.num_pages }}">Last &raquo;</a></li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            {% endif %}
+
+        {% else %}
+            <!-- Empty state -->
+            <div class="glass-card p-5 text-center">
+                <div class="rounded-circle bg-secondary d-inline-flex p-4 mb-4" style="background: rgba(255, 255, 255, 0.03) !important;">
+                    <i class="bi bi-suit-heart text-secondary fs-1"></i>
+                </div>
+                <h3 class="fw-bold">No AI Matches Extracted</h3>
+                <p class="text-secondary col-lg-5 mx-auto mb-4">
+                    Upload your baseline resume first, discover jobs, and then click "Run Match Analysis" on job cards to perform matches.
+                </p>
+                <a href="{% url 'resumes:resume_upload' %}" class="btn btn-gradient">Upload Resume</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+
+{% block title %}Application Tracker - AI Job Agent{% endblock %}
+
+{% block content %}
+<div class="row fade-in-up py-4">
+    <!-- Header -->
+    <div class="col-12 d-flex flex-wrap justify-content-between align-items-center mb-5">
+        <div>
+            <h1 class="fw-bold mb-1"><i class="bi bi-send text-info me-2"></i> Application Tracker</h1>
+            <p class="text-secondary mb-0">Monitor job pipelines, track interview phases, and manage bookmark folders</p>
+        </div>
+        <div>
+            <a href="{% url 'jobs:job_list' %}" class="btn btn-gradient"><i class="bi bi-search me-2"></i> Explore Jobs</a>
+        </div>
+    </div>
+
+    <!-- Pipeline Stage Selector Filters -->
+    <div class="col-12 mb-4">
+        <div class="glass-card p-3 d-flex flex-wrap gap-2 align-items-center">
+            <span class="text-secondary small fw-bold text-uppercase me-2"><i class="bi bi-funnel me-1"></i> Filter Stage:</span>
+            <a href="{% url 'applications:tracker_list' %}" class="btn btn-sm {% if not status_filter %}btn-info{% else %}btn-outline-custom{% endif %} px-3 rounded-pill">
+                All Applications
+            </a>
+            {% for value, name in status_choices %}
+                <a href="{% url 'applications:tracker_list' %}?status={{ value }}" class="btn btn-sm {% if status_filter == value %}btn-info{% else %}btn-outline-custom{% endif %} px-3 rounded-pill text-capitalize">
+                    {{ name }}
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="col-lg-8">
+        <h3 class="h5 fw-bold text-white mb-4"><i class="bi bi-list-task me-2 text-info"></i> Pipeline ({{ applications|length }})</h3>
+        
+        {% if applications %}
+            <div class="row g-4">
+                {% for app in applications %}
+                    <div class="col-12">
+                        <div class="glass-card p-4">
+                            <div class="d-flex flex-wrap justify-content-between align-items-start mb-3">
+                                <div>
+                                    <h4 class="h5 text-white fw-bold mb-1">{{ app.job.title }}</h4>
+                                    <p class="text-secondary small mb-0">{{ app.job.company }} • {{ app.job.location|default:"Remote" }}</p>
+                                </div>
+                                <div class="mt-2 mt-sm-0 d-flex gap-2 align-items-center">
+                                    <!-- Inline status update form -->
+                                    <form action="{% url 'applications:tracker_status_update' app.pk %}" method="post" class="d-inline">
+                                        {% csrf_token %}
+                                        <select name="status" onchange="this.form.submit()" class="form-select form-select-sm bg-dark border-secondary text-white py-1">
+                                            {% for val, label in status_choices %}
+                                                <option value="{{ val }}" {% if app.status == val %}selected{% endif %}>{{ label }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </form>
+                                    
+                                    <a href="{% url 'applications:tracker_edit' app.pk %}" class="btn btn-sm btn-outline-custom" title="Edit Notes"><i class="bi bi-pencil-square text-info"></i></a>
+                                    <a href="{% url 'applications:tracker_delete' app.pk %}" class="btn btn-sm btn-outline-danger" title="Stop Tracking"><i class="bi bi-trash"></i></a>
+                                </div>
+                            </div>
+
+                            <!-- Notes Section -->
+                            <div class="bg-dark p-3 rounded border border-secondary mb-3" style="background: rgba(0,0,0,0.15) !important; border-color: rgba(255,255,255,0.05) !important;">
+                                <span class="text-secondary small fw-bold text-uppercase d-block mb-1">Follow-up Notes</span>
+                                {% if app.notes %}
+                                    <p class="text-secondary small mb-0" style="white-space: pre-line;">{{ app.notes }}</p>
+                                {% else %}
+                                    <p class="text-secondary small mb-0" style="font-style: italic; opacity: 0.5;">No notes added yet. Click edit to log dates, contact names, or checklist reminders.</p>
+                                {% endif %}
+                            </div>
+
+                            <div class="d-flex flex-wrap justify-content-between align-items-center mt-3 pt-3 border-top border-secondary" style="border-color: rgba(255,255,255,0.05) !important;">
+                                <span class="text-secondary small"><i class="bi bi-calendar-event me-2"></i> Tracked: {{ app.applied_at|date:"M d, Y" }}</span>
+                                <a href="{% url 'jobs:job_detail' app.job.pk %}" class="btn btn-sm btn-outline-custom">View Job Board</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <!-- Empty state -->
+            <div class="glass-card p-5 text-center">
+                <div class="rounded-circle bg-secondary d-inline-flex p-4 mb-4" style="background: rgba(255, 255, 255, 0.03) !important;">
+                    <i class="bi bi-send text-secondary fs-1"></i>
+                </div>
+                <h4 class="fw-bold text-white">No applications in this stage</h4>
+                <p class="text-secondary small col-lg-7 mx-auto">
+                    Change filters above or explore discoverable listings to track new applications.
+                </p>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Sidebar Saved Folder -->
+    <div class="col-lg-4 mt-5 mt-lg-0">
+        <h3 class="h5 fw-bold text-white mb-4"><i class="bi bi-bookmark text-warning me-2"></i> Saved Bookmarks ({{ saved_jobs|length }})</h3>
+        
+        {% if saved_jobs %}
+            <div class="d-grid gap-3">
+                {% for item in saved_jobs %}
+                    <div class="glass-card p-3">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h5 class="h6 text-white fw-bold mb-0 text-truncate-1" style="max-width: 70%;">{{ item.job.title }}</h5>
+                            <form action="{% url 'applications:saved_delete' item.pk %}" method="post" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-link p-0 text-danger text-decoration-none" title="Remove bookmark"><i class="bi bi-x-lg"></i></button>
+                            </form>
+                        </div>
+                        <p class="text-secondary small mb-3">{{ item.job.company }}</p>
+                        
+                        <div class="d-flex gap-2">
+                            <a href="{% url 'jobs:job_detail' item.job.pk %}" class="btn btn-xs btn-outline-custom w-50 py-1" style="font-size: 0.75rem;">Explore</a>
+                            <form action="{% url 'core:apply_job' item.job.pk %}" method="post" class="w-50">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-xs btn-gradient w-100 py-1" style="font-size: 0.75rem;"><i class="bi bi-send me-1"></i> Apply</button>
+                            </form>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="glass-card p-4 text-center">
+                <i class="bi bi-bookmark text-secondary fs-3 mb-2 d-block"></i>
+                <span class="text-secondary small">Bookmark folder is empty.</span>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

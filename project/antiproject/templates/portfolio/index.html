@@ -1,0 +1,276 @@
+{% extends 'base.html' %}
+{% load static portfolio_extras %}
+
+{% block content %}
+<!-- HERO SECTION -->
+<section id="hero" class="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <div id="three-container" class="absolute inset-0 z-0"></div>
+    
+    <div class="relative z-10 text-center px-4">
+        <h2 class="font-orbitron text-cyber-neon text-sm tracking-[0.5em] mb-4 uppercase animate-pulse" data-aos="fade-down">
+            System Online
+        </h2>
+        <h1 class="font-orbitron text-6xl md:text-8xl font-bold mb-6 tracking-tighter" data-aos="fade-up" data-aos-delay="200">
+            {{ about.name|default:"[YOUR_NAME]" }}
+        </h1>
+        <p class="text-xl md:text-2xl text-white/70 max-w-2xl mx-auto mb-10 font-light tracking-wide" data-aos="fade-up" data-aos-delay="400">
+            {{ about.tagline|default:"[YOUR_TAGLINE]" }}
+        </p>
+        
+        <div class="flex flex-col md:flex-row gap-4 justify-center items-center" data-aos="zoom-in" data-aos-delay="600">
+            <a href="#projects" class="group relative px-8 py-3 bg-cyber-neon text-black font-bold font-orbitron text-sm transition-all hover:scale-105 active:scale-95 shadow-[0_0_20px_rgba(0,242,255,0.5)]">
+                VIEW PROJECTS
+                <span class="absolute inset-0 border border-cyber-neon scale-110 opacity-0 group-hover:opacity-100 transition-all"></span>
+            </a>
+            <a href="#contact" class="px-8 py-3 border border-white/20 hover:border-cyber-neon hover:text-cyber-neon transition-all font-orbitron text-sm">
+                CONTACT ME
+            </a>
+            {% if about.resume %}
+            <a href="{{ about.resume.url }}" class="flex items-center gap-2 text-white/50 hover:text-white transition-colors text-sm font-orbitron">
+                <i class="fas fa-download"></i> DOWNLOAD RESUME
+            </a>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce text-white/20">
+        <i class="fas fa-chevron-down text-2xl"></i>
+    </div>
+</section>
+
+<!-- ABOUT SECTION -->
+<section id="about" class="py-24 px-6 relative">
+    <div class="max-w-6xl mx-auto">
+        <div class="grid md:grid-cols-2 gap-16 items-center">
+            <div class="relative" data-aos="fade-right">
+                <div class="aspect-square glass overflow-hidden relative group">
+                    {% if about.profile_image %}
+                    <img src="{{ about.profile_image.url }}" alt="Profile" class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700">
+                    {% else %}
+                    <div class="w-full h-full bg-gradient-to-br from-cyber-dark to-cyber-black flex items-center justify-center">
+                        <i class="fas fa-user-astronaut text-8xl text-cyber-neon opacity-20"></i>
+                    </div>
+                    {% endif %}
+                    <div class="absolute inset-0 border-2 border-cyber-neon/30 group-hover:border-cyber-neon transition-all"></div>
+                </div>
+                <!-- Decorative elements -->
+                <div class="absolute -top-4 -left-4 w-20 h-20 border-t-2 border-l-2 border-cyber-neon"></div>
+                <div class="absolute -bottom-4 -right-4 w-20 h-20 border-b-2 border-r-2 border-cyber-purple"></div>
+            </div>
+            
+            <div data-aos="fade-left">
+                <h3 class="font-orbitron text-cyber-neon mb-2 uppercase tracking-widest text-sm">Identification</h3>
+                <h2 class="font-orbitron text-4xl mb-6">ABOUT THE SYSTEM</h2>
+                <div class="space-y-4 text-white/70 leading-relaxed">
+                    <p>{{ about.bio|default:"[YOUR_BIO]" }}</p>
+                    <div class="grid grid-cols-2 gap-6 pt-6">
+                        <div class="glass p-4 border-l-4 border-cyber-neon">
+                            <span class="block text-xs font-orbitron text-cyber-neon uppercase mb-1">Experience</span>
+                            <span class="text-xl font-bold">{{ about.experience_summary|default:"[YOUR_EXPERIENCE]" }}</span>
+                        </div>
+                        <div class="glass p-4 border-l-4 border-cyber-purple">
+                            <span class="block text-xs font-orbitron text-cyber-purple uppercase mb-1">Location</span>
+                            <span class="text-xl font-bold">{{ about.location|default:"[YOUR_LOCATION]" }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SKILLS SECTION -->
+<section id="skills" class="py-24 px-6 bg-cyber-dark/50">
+    <div class="max-w-6xl mx-auto text-center mb-16">
+        <h3 class="font-orbitron text-cyber-neon mb-2 uppercase tracking-widest text-sm" data-aos="fade-up">Capabilities</h3>
+        <h2 class="font-orbitron text-4xl" data-aos="fade-up" data-aos-delay="100">TECHNICAL CORE</h2>
+    </div>
+    
+    <div class="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8">
+        {% for skill in skills %}
+        <div class="glass p-8 group hover:neon-border transition-all duration-500" data-aos="zoom-in" data-aos-delay="{{ forloop.counter|multiply:100 }}">
+            <div class="text-4xl text-white/30 group-hover:text-cyber-neon transition-colors mb-4">
+                <i class="{{ skill.icon_class|default:'fas fa-code' }}"></i>
+            </div>
+            <h4 class="font-orbitron text-sm mb-2 uppercase tracking-wider">{{ skill.name }}</h4>
+            <div class="w-full h-1 bg-white/10 overflow-hidden">
+                <div class="h-full bg-cyber-neon transition-all duration-1000 w-0 group-hover:w-[{{ skill.proficiency }}%]"></div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-span-full text-center text-white/30 font-orbitron">NO SKILLS DETECTED IN DATABASE</div>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- PROJECTS SECTION -->
+<section id="projects" class="py-24 px-6">
+    <div class="max-w-6xl mx-auto mb-16 flex flex-col md:flex-row justify-between items-end gap-4">
+        <div>
+            <h3 class="font-orbitron text-cyber-neon mb-2 uppercase tracking-widest text-sm" data-aos="fade-right">Archives</h3>
+            <h2 class="font-orbitron text-4xl" data-aos="fade-right" data-aos-delay="100">DATA PROJECTS</h2>
+        </div>
+        <div class="text-white/40 text-sm font-orbitron hidden md:block" data-aos="fade-left">
+            SELECT A PROJECT TO LOAD MODULE
+        </div>
+    </div>
+    
+    <div class="max-w-7xl mx-auto grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {% for project in projects %}
+        <div class="group glass overflow-hidden relative" data-aos="fade-up" data-aos-delay="{{ forloop.counter|multiply:100 }}">
+            <div class="aspect-video relative overflow-hidden">
+                <img src="{{ project.image.url }}" alt="{{ project.project_name }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                <div class="absolute inset-0 bg-gradient-to-t from-cyber-black to-transparent opacity-60"></div>
+                {% if project.featured %}
+                <div class="absolute top-4 right-4 px-3 py-1 bg-cyber-purple text-white text-[10px] font-orbitron uppercase tracking-widest">Featured</div>
+                {% endif %}
+            </div>
+            
+            <div class="p-6">
+                <h3 class="font-orbitron text-xl mb-3 group-hover:text-cyber-neon transition-colors">{{ project.project_name }}</h3>
+                <p class="text-white/60 text-sm mb-6 line-clamp-3">{{ project.description }}</p>
+                
+                <div class="flex gap-2 flex-wrap mb-8">
+                    {% for tech in project.tech_stack|split:"," %}
+                    <span class="text-[10px] px-2 py-1 bg-white/5 border border-white/10 text-white/40 font-orbitron uppercase">{{ tech }}</span>
+                    {% endfor %}
+                </div>
+                
+                <div class="flex justify-between items-center mt-auto pt-4 border-t border-white/5">
+                    <div class="flex gap-4">
+                        {% if project.github_url %}
+                        <a href="{{ project.github_url }}" target="_blank" class="text-white/40 hover:text-cyber-neon transition-colors"><i class="fab fa-github"></i></a>
+                        {% endif %}
+                        {% if project.live_demo_url %}
+                        <a href="{{ project.live_demo_url }}" target="_blank" class="text-white/40 hover:text-cyber-neon transition-colors"><i class="fas fa-external-link-alt"></i></a>
+                        {% endif %}
+                    </div>
+                    <button class="text-[10px] font-orbitron text-cyber-neon border-b border-cyber-neon/30 hover:border-cyber-neon transition-all">LOAD DETAILS</button>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- EXPERIENCE SECTION -->
+<section id="experience" class="py-24 px-6 bg-cyber-dark/30">
+    <div class="max-w-4xl mx-auto">
+        <div class="text-center mb-16">
+            <h3 class="font-orbitron text-cyber-neon mb-2 uppercase tracking-widest text-sm" data-aos="fade-up">Timeline</h3>
+            <h2 class="font-orbitron text-4xl" data-aos="fade-up" data-aos-delay="100">LOG HISTORY</h2>
+        </div>
+        
+        <div class="space-y-12">
+            {% for exp in experiences %}
+            <div class="relative pl-8 md:pl-0" data-aos="fade-up">
+                <div class="md:flex gap-8 items-start">
+                    <div class="md:w-1/4 mb-2 md:mb-0 md:text-right pt-1">
+                        <span class="font-orbitron text-cyber-neon text-sm">{{ exp.start_date }} - {{ exp.end_date }}</span>
+                    </div>
+                    <div class="md:w-3/4 relative pb-8">
+                        <!-- Connector line -->
+                        <div class="absolute -left-8 md:-left-[2.25rem] top-2 w-4 h-4 rounded-full border-2 border-cyber-neon bg-cyber-black z-10"></div>
+                        {% if not forloop.last %}
+                        <div class="absolute -left-6 md:-left-8 top-6 bottom-0 w-[1px] bg-white/10"></div>
+                        {% endif %}
+                        
+                        <h3 class="font-orbitron text-xl mb-1">{{ exp.title }}</h3>
+                        <h4 class="text-cyber-purple font-orbitron text-xs uppercase mb-4">{{ exp.company }}</h4>
+                        <p class="text-white/60 text-sm leading-relaxed">{{ exp.description }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- CONTACT SECTION -->
+<section id="contact" class="py-24 px-6 relative overflow-hidden">
+    <!-- Background glow -->
+    <div class="absolute -bottom-24 -right-24 w-96 h-96 bg-cyber-neon/10 blur-[120px] rounded-full"></div>
+    <div class="absolute -top-24 -left-24 w-96 h-96 bg-cyber-purple/10 blur-[120px] rounded-full"></div>
+
+    <div class="max-w-4xl mx-auto relative z-10">
+        <div class="text-center mb-16">
+            <h3 class="font-orbitron text-cyber-neon mb-2 uppercase tracking-widest text-sm" data-aos="fade-up">Transmission</h3>
+            <h2 class="font-orbitron text-4xl" data-aos="fade-up" data-aos-delay="100">CONNECT TERMINAL</h2>
+        </div>
+        
+        <div class="glass p-8 md:p-12" data-aos="zoom-in">
+            <form id="contact-form" class="space-y-6">
+                {% csrf_token %}
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block font-orbitron text-[10px] text-white/50 uppercase mb-2 tracking-widest">Protocol Name</label>
+                        <input type="text" name="name" required class="w-full bg-white/5 border border-white/10 px-4 py-3 text-white focus:border-cyber-neon focus:outline-none transition-all font-light">
+                    </div>
+                    <div>
+                        <label class="block font-orbitron text-[10px] text-white/50 uppercase mb-2 tracking-widest">Network Address</label>
+                        <input type="email" name="email" required class="w-full bg-white/5 border border-white/10 px-4 py-3 text-white focus:border-cyber-neon focus:outline-none transition-all font-light">
+                    </div>
+                </div>
+                <div>
+                    <label class="block font-orbitron text-[10px] text-white/50 uppercase mb-2 tracking-widest">Message Packet</label>
+                    <textarea name="message" required rows="5" class="w-full bg-white/5 border border-white/10 px-4 py-3 text-white focus:border-cyber-neon focus:outline-none transition-all font-light resize-none"></textarea>
+                </div>
+                <div class="flex justify-between items-center">
+                    <div id="form-status" class="text-xs font-orbitron uppercase tracking-widest"></div>
+                    <button type="submit" class="px-10 py-3 bg-cyber-neon text-black font-bold font-orbitron text-xs hover:shadow-[0_0_20px_#00f2ff] transition-all">
+                        SEND PACKET
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/hero-3d.js' %}"></script>
+<script>
+    // Form handling
+    document.getElementById('contact-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const form = e.target;
+        const status = document.getElementById('form-status');
+        const submitBtn = form.querySelector('button');
+        
+        status.textContent = 'TRANSMITTING...';
+        status.className = 'text-xs font-orbitron uppercase tracking-widest text-cyber-neon animate-pulse';
+        submitBtn.disabled = true;
+        
+        const formData = new FormData(form);
+        
+        try {
+            const response = await fetch('{% url "contact" %}', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+                }
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok) {
+                status.textContent = 'PACKET DELIVERED';
+                status.className = 'text-xs font-orbitron uppercase tracking-widest text-green-500';
+                form.reset();
+            } else {
+                status.textContent = 'TRANSMISSION FAILED';
+                status.className = 'text-xs font-orbitron uppercase tracking-widest text-red-500';
+            }
+        } catch (error) {
+            status.textContent = 'NETWORK ERROR';
+            status.className = 'text-xs font-orbitron uppercase tracking-widest text-red-500';
+        } finally {
+            submitBtn.disabled = false;
+            setTimeout(() => {
+                if (status.textContent !== 'PACKET DELIVERED') status.textContent = '';
+            }, 5000);
+        }
+    });
+</script>
+{% endblock %}

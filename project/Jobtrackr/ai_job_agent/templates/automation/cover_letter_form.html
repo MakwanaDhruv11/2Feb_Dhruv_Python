@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block title %}Generate AI Cover Letter - AI Job Agent{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center align-items-center py-5 fade-in-up">
+    <div class="col-lg-6">
+        <div class="glass-card p-5">
+            <div class="text-center mb-5">
+                <div class="rounded-3 bg-gradient d-inline-flex p-3 mb-3" style="background: var(--gradient-accent);">
+                    <i class="bi bi-file-earmark-word text-white fs-3"></i>
+                </div>
+                <h2 class="fw-bold">Generate AI Cover Letter</h2>
+                <p class="text-secondary">Tailor a professional cover letter specifically for this position using your uploaded resume data.</p>
+            </div>
+
+            <!-- Job Context Card -->
+            <div class="bg-dark border border-secondary p-4 rounded-3 mb-4" style="background: rgba(0,0,0,0.2) !important; border-color: rgba(255,255,255,0.06) !important;">
+                <span class="text-secondary small fw-bold text-uppercase d-block mb-1">Target Position</span>
+                <h4 class="text-white fw-bold h5 mb-1">{{ job.title }}</h4>
+                <p class="text-info small mb-0">{{ job.company }} • {{ job.location|default:"Remote" }}</p>
+            </div>
+
+            <form method="post" id="genForm">
+                {% csrf_token %}
+                <input type="hidden" name="job_id" value="{{ job.pk }}">
+                
+                <div class="mb-4">
+                    <label class="form-label text-secondary small fw-bold text-uppercase mb-2">Select Reference Resume</label>
+                    <select name="resume_id" class="form-select bg-dark border-secondary text-white py-2.5" required>
+                        {% for r in resumes %}
+                            <option value="{{ r.pk }}">{{ r.parsed_data.name|default:r.file.name|truncatechars:40 }} (Uploaded {{ r.uploaded_at|date:"M d" }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-gradient w-100 py-2.5 mb-3" id="genBtn">
+                    <span id="btnText"><i class="bi bi-cpu me-2"></i> Generate Cover Letter</span>
+                    <span id="btnSpinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                </button>
+                
+                <a href="{% url 'jobs:job_detail' job.pk %}" class="btn btn-secondary bg-dark border-secondary w-100 py-2.5">Cancel</a>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('genForm').addEventListener('submit', function() {
+        const btnText = document.getElementById('btnText');
+        const btnSpinner = document.getElementById('btnSpinner');
+        const genBtn = document.getElementById('genBtn');
+
+        btnText.innerText = "Tailoring Cover Letter with Gemini...";
+        btnSpinner.classList.remove('d-none');
+        genBtn.setAttribute('disabled', 'true');
+    });
+</script>
+{% endblock %}

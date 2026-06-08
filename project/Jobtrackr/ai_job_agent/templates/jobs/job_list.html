@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+
+{% block title %}Job Discovery - AI Job Agent{% endblock %}
+
+{% block content %}
+<div class="row fade-in-up py-4">
+    <!-- Header -->
+    <div class="col-12 d-flex flex-wrap justify-content-between align-items-center mb-5">
+        <div>
+            <h1 class="fw-bold mb-1">Job Discovery</h1>
+            <p class="text-secondary mb-0">Discover and search active postings across RemoteOK, Wellfound, Greenhouse, and Lever</p>
+        </div>
+        <div class="mt-3 mt-md-0">
+            <form action="{% url 'jobs:job_fetch' %}" method="post" id="fetchForm" class="d-inline">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-gradient" id="fetchBtn">
+                    <i class="bi bi-arrow-clockwise me-2" id="syncIcon"></i>
+                    <span id="fetchText">Fetch Latest Jobs</span>
+                    <span id="fetchSpinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Filters Sidebar & Search -->
+    <div class="col-lg-3 mb-4">
+        <div class="glass-card p-4 sticky-top" style="top: 90px; z-index: 10;">
+            <h4 class="h5 mb-4 text-white"><i class="bi bi-funnel me-2 text-info"></i> Filters</h4>
+            
+            <form method="get" action="{% url 'jobs:job_list' %}">
+                <!-- Search bar -->
+                <div class="mb-4">
+                    <label class="form-label text-secondary small fw-bold text-uppercase">Keyword Search</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-dark border-secondary text-secondary"><i class="bi bi-search"></i></span>
+                        <input type="text" name="q" value="{{ q }}" class="form-control bg-dark border-secondary text-white" placeholder="Role, company, skill...">
+                    </div>
+                </div>
+
+                <!-- Source filter -->
+                <div class="mb-4">
+                    <label class="form-label text-secondary small fw-bold text-uppercase">Job Source</label>
+                    <select name="source" class="form-select bg-dark border-secondary text-white">
+                        <option value="">All Sources</option>
+                        {% for src_value, src_name in sources %}
+                            <option value="{{ src_value }}" {% if source == src_value %}selected{% endif %}>{{ src_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-gradient w-100 mb-2">Apply Filters</button>
+                {% if q or source %}
+                    <a href="{% url 'jobs:job_list' %}" class="btn btn-secondary bg-dark border-secondary w-100">Clear All</a>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+
+    <!-- Job Cards Grid -->
+    <div class="col-lg-9">
+        {% if jobs %}
+            <div class="row g-4">
+                {% for job in jobs %}
+                    <div class="col-md-6 col-xl-4">
+                        <div class="glass-card p-4 h-100 d-flex flex-column">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <span class="badge bg-secondary text-secondary-hover border border-secondary px-2.5 py-1 rounded-pill text-capitalize" style="font-size: 0.75rem;">
+                                    {{ job.source }}
+                                </span>
+                                {% if job.salary %}
+                                    <span class="text-success small fw-bold"><i class="bi bi-cash me-1"></i>{{ job.salary }}</span>
+                                {% endif %}
+                            </div>
+                            
+                            <h4 class="h5 mb-1 text-white fw-bold">{{ job.title }}</h4>
+                            <p class="text-secondary small mb-3">{{ job.company }} • {{ job.location|default:"Remote" }}</p>
+                            
+                            <p class="text-secondary small mb-4 flex-grow-1" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.5;">
+                                {{ job.description }}
+                            </p>
+                            
+                            <!-- Tags -->
+                            {% if job.tags %}
+                                <div class="mb-3 d-flex flex-wrap gap-1">
+                                    {% for tag in job.tags|slice:":3" %}
+                                        <span class="badge bg-dark border border-secondary text-secondary" style="font-size: 0.7rem;">{{ tag }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            
+                            <div class="d-flex gap-2 mt-auto">
+                                <a href="{% url 'jobs:job_detail' job.pk %}" class="btn btn-sm btn-outline-custom w-50">Details</a>
+                                <a href="{{ job.url }}" target="_blank" class="btn btn-sm btn-gradient w-50"><i class="bi bi-box-arrow-up-right me-1"></i> Apply</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            {% if is_paginated %}
+                <nav class="mt-5 d-flex justify-content-center">
+                    <ul class="pagination">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link bg-dark border-secondary text-info" href="?page=1{% if q %}&q={{ q }}{% endif %}{% if source %}&source={{ source }}{% endif %}">&laquo; First</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link bg-dark border-secondary text-info" href="?page={{ page_obj.previous_page_number }}{% if q %}&q={{ q }}{% endif %}{% if source %}&source={{ source }}{% endif %}">Previous</a>
+                            </li>
+                        {% endif %}
+
+                        <li class="page-item active">
+                            <span class="page-link bg-gradient border-0 text-white">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                        </li>
+
+                        {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link bg-dark border-secondary text-info" href="?page={{ page_obj.next_page_number }}{% if q %}&q={{ q }}{% endif %}{% if source %}&source={{ source }}{% endif %}">Next</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link bg-dark border-secondary text-info" href="?page={{ page_obj.paginator.num_pages }}{% if q %}&q={{ q }}{% endif %}{% if source %}&source={{ source }}{% endif %}">Last &raquo;</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            {% endif %}
+
+        {% else %}
+            <!-- Empty State -->
+            <div class="glass-card p-5 text-center">
+                <div class="rounded-circle bg-secondary d-inline-flex p-4 mb-4" style="background: rgba(255, 255, 255, 0.03) !important;">
+                    <i class="bi bi-briefcase text-secondary fs-1"></i>
+                </div>
+                <h3 class="fw-bold">No Jobs Discovered</h3>
+                <p class="text-secondary col-lg-6 mx-auto mb-4">
+                    There are currently no job listings matching your parameters in the database. Click "Fetch Latest Jobs" above to scrape and discover fresh listings.
+                </p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+    .pagination .page-link:hover {
+        background-color: var(--primary-accent) !important;
+        color: #0b0f19 !important;
+    }
+</style>
+
+<script>
+    document.getElementById('fetchForm').addEventListener('submit', function() {
+        const fetchText = document.getElementById('fetchText');
+        const fetchSpinner = document.getElementById('fetchSpinner');
+        const fetchBtn = document.getElementById('fetchBtn');
+        const syncIcon = document.getElementById('syncIcon');
+
+        fetchText.innerText = "Discovering jobs...";
+        syncIcon.classList.add('d-none');
+        fetchSpinner.classList.remove('d-none');
+        fetchBtn.setAttribute('disabled', 'true');
+    });
+</script>
+{% endblock %}

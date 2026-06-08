@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ job.title }} at {{ job.company }} - AI Job Agent{% endblock %}
+
+{% block content %}
+<div class="row fade-in-up py-4">
+    <!-- Header -->
+    <div class="col-12 d-flex flex-wrap justify-content-between align-items-center mb-5">
+        <div>
+            <h1 class="fw-bold mb-1"><i class="bi bi-briefcase text-info me-2"></i> {{ job.title }}</h1>
+            <p class="text-secondary mb-0">{{ job.company }} • {{ job.location|default:"Remote" }}</p>
+        </div>
+        <div class="d-flex gap-3">
+            <a href="{% url 'jobs:job_list' %}" class="btn btn-outline-custom">Back to Jobs</a>
+            <a href="{% url 'automation:assisted_apply' %}?job_id={{ job.pk }}" class="btn btn-outline-custom"><i class="bi bi-magic me-1 text-warning"></i> Assisted Apply</a>
+            <a href="{% url 'automation:cover_letter_generate' %}?job_id={{ job.pk }}" class="btn btn-outline-custom"><i class="bi bi-file-earmark-word me-1 text-info"></i> AI Cover Letter</a>
+            <a href="{{ job.url }}" target="_blank" class="btn btn-gradient"><i class="bi bi-box-arrow-up-right me-2"></i> Apply on {{ job.get_source_display }}</a>
+        </div>
+    </div>
+
+    <!-- Job Info Sidebar -->
+    <div class="col-lg-4 mb-4">
+        <div class="glass-card p-4 h-100">
+            <h4 class="h5 mb-4 text-white border-bottom border-secondary pb-2" style="border-color: rgba(255, 255, 255, 0.08) !important;">
+                Job Parameters
+            </h4>
+
+            <div class="mb-4">
+                <span class="text-secondary d-block small mb-1">Company Name</span>
+                <h5 class="text-white fw-bold">{{ job.company }}</h5>
+            </div>
+
+            <div class="mb-4">
+                <span class="text-secondary d-block small mb-1">Location / Office</span>
+                <span class="text-white d-inline-flex align-items-center">
+                    <i class="bi bi-geo-alt text-info me-2"></i> {{ job.location|default:"Remote" }}
+                </span>
+            </div>
+
+            <div class="mb-4">
+                <span class="text-secondary d-block small mb-1">Discovery Source</span>
+                <span class="badge bg-secondary-subtle text-white border border-secondary px-3 py-1.5 rounded-pill text-capitalize">
+                    {{ job.source }}
+                </span>
+            </div>
+
+            {% if job.salary %}
+                <div class="mb-4">
+                    <span class="text-secondary d-block small mb-1">Compensation Range</span>
+                    <span class="text-success fw-bold fs-5">
+                        <i class="bi bi-cash-coin me-2"></i> {{ job.salary }}
+                    </span>
+                </div>
+            {% endif %}
+
+            <div class="mb-4">
+                <span class="text-secondary d-block small mb-1">Discovered At</span>
+                <span class="text-secondary small">
+                    <i class="bi bi-calendar-check me-2"></i> {{ job.fetched_at|date:"M d, Y • H:i" }}
+                </span>
+            </div>
+
+            {% if job.tags %}
+                <div class="mb-4">
+                    <span class="text-secondary d-block small mb-2">Metadata Tags</span>
+                    <div class="d-flex flex-wrap gap-2">
+                        {% for tag in job.tags %}
+                            <span class="badge bg-dark border border-secondary text-secondary px-2.5 py-1.5">{{ tag }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+
+            <div class="mt-5 border-top border-secondary pt-4 d-grid gap-2" style="border-color: rgba(255, 255, 255, 0.05) !important;">
+                <form action="{% url 'core:save_job' job.pk %}" method="post" class="w-100">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-custom w-100 text-start"><i class="bi bi-bookmark me-2 text-warning"></i> Bookmark Position</button>
+                </form>
+                <form action="{% url 'core:apply_job' job.pk %}" method="post" class="w-100">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-custom w-100 text-start"><i class="bi bi-send me-2 text-success"></i> Track Application</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Job Description Section -->
+    <div class="col-lg-8">
+        <div class="glass-card p-5 h-100">
+            <h3 class="h4 mb-4 border-bottom border-secondary pb-3" style="border-color: rgba(255, 255, 255, 0.08) !important;">
+                Job Description
+            </h3>
+            
+            <div class="text-secondary fs-6" style="white-space: pre-line; line-height: 1.7;">
+                {{ job.description|default:"No detailed job description was provided by the source board." }}
+            </div>
+            
+            <!-- Quick Actions Footer -->
+            <div class="border-top border-secondary mt-5 pt-4 d-flex justify-content-between align-items-center" style="border-color: rgba(255, 255, 255, 0.08) !important;">
+                <span class="text-secondary small">Ready to proceed?</span>
+                <div class="d-flex gap-2">
+                    <a href="{% url 'automation:assisted_apply' %}?job_id={{ job.pk }}" class="btn btn-outline-custom"><i class="bi bi-magic me-1 text-warning"></i> Assisted Apply</a>
+                    <a href="{% url 'automation:cover_letter_generate' %}?job_id={{ job.pk }}" class="btn btn-outline-custom"><i class="bi bi-file-earmark-word me-1 text-info"></i> AI Cover Letter</a>
+                    <a href="{{ job.url }}" target="_blank" class="btn btn-gradient"><i class="bi bi-box-arrow-up-right me-2"></i> Apply Now</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

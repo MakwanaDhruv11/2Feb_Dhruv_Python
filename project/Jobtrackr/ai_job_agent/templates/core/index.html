@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+
+{% block title %}AI Job Agent - Streamline Your Career Search{% endblock %}
+
+{% block content %}
+<div class="row min-vh-75 align-items-center py-5 fade-in-up">
+    <!-- Hero Section -->
+    <div class="col-lg-6 mb-5 mb-lg-0">
+        <h1 class="display-3 fw-extrabold mb-4" style="line-height: 1.15; font-family: 'Outfit', sans-serif;">
+            Accelerate Your Job Hunt With 
+            <span style="background: var(--gradient-accent); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                AI Intelligence
+            </span>
+        </h1>
+        <p class="lead text-secondary mb-5 fs-4">
+            Track applications, generate tailored cover letters, analyze resume matching, and automate follow-ups — all in one gorgeous, unified cockpit.
+        </p>
+        
+        <div class="d-flex flex-wrap gap-3">
+            {% if user.is_authenticated %}
+                <a href="#dashboard" class="btn btn-gradient btn-lg">Go to Dashboard <i class="bi bi-arrow-right ms-1"></i></a>
+            {% else %}
+                <a href="/accounts/signup/" class="btn btn-gradient btn-lg">Get Started Free <i class="bi bi-rocket-takeoff ms-1"></i></a>
+                <a href="/accounts/login/" class="btn btn-outline-custom btn-lg">Sign In</a>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Visual Graphic / Interactive Card Stack -->
+    <div class="col-lg-6 d-flex justify-content-center">
+        <div class="position-relative w-100" style="max-width: 500px;">
+            <!-- Outer Glow -->
+            <div class="position-absolute top-50 start-50 translate-middle rounded-circle bg-info opacity-10 filter-blur" style="width: 350px; height: 350px; filter: blur(80px); z-index: -1;"></div>
+            
+            <!-- Glass Card 1 -->
+            <div class="glass-card p-4 mb-4 position-relative" style="z-index: 2; transform: rotate(-2deg);">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="badge bg-info-subtle text-info px-2.5 py-1.5 rounded-pill border border-info-subtle">AI Match Score</span>
+                    <span class="text-white fw-bold fs-5">94%</span>
+                </div>
+                <h4 class="h5 mb-1 text-white">Senior Full-Stack Engineer</h4>
+                <p class="text-secondary small mb-3">Google • Bengaluru, IN</p>
+                <div class="progress bg-dark" style="height: 6px;">
+                    <div class="progress-bar bg-info" role="progressbar" style="width: 94%" aria-valuenow="94" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+            </div>
+            
+            <!-- Glass Card 2 -->
+            <div class="glass-card p-4 position-relative" style="z-index: 1; transform: translateY(-40px) translateX(30px) rotate(3deg); background: rgba(16, 185, 129, 0.08); border-color: rgba(16, 185, 129, 0.2);">
+                <div class="d-flex align-items-center mb-3 text-emerald">
+                    <i class="bi bi-check-circle-fill me-2 fs-5 text-success"></i>
+                    <span class="text-success fw-semibold">Tailored Resume Ready</span>
+                </div>
+                <p class="text-secondary small mb-0">AI adjusted 4 keywords to align with job description requirements.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="row py-5 mt-5">
+    <div class="col-12 text-center mb-5">
+        <h2 class="display-5 fw-bold mb-3">Powered by Advanced Agentic Workflows</h2>
+        <p class="text-secondary col-lg-6 mx-auto">Leverage modern AI pipelines to handle the tedious work of the job search so you can focus on passing the interview.</p>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="glass-card p-4 h-100">
+            <div class="rounded-3 bg-gradient d-inline-flex p-3 mb-4" style="background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);">
+                <i class="bi bi-file-earmark-diff text-white fs-4"></i>
+            </div>
+            <h3 class="h4 mb-3">Resume Tailoring</h3>
+            <p class="text-secondary">Instantly extract missing keywords, optimize bullets, and alignment score your CV for target job openings.</p>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="glass-card p-4 h-100">
+            <div class="rounded-3 bg-gradient d-inline-flex p-3 mb-4" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                <i class="bi bi-envelope-paper text-white fs-4"></i>
+            </div>
+            <h3 class="h4 mb-3">Cover Letter Generator</h3>
+            <p class="text-secondary">Synthesize context from your career accomplishments and target job details to generate hyper-personalized cover letters.</p>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="glass-card p-4 h-100">
+            <div class="rounded-3 bg-gradient d-inline-flex p-3 mb-4" style="background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);">
+                <i class="bi bi-journal-check text-white fs-4"></i>
+            </div>
+            <h3 class="h4 mb-3">Interview Preparation</h3>
+            <p class="text-secondary">Receive highly context-aware interview questions, flashcards, and guide answers generated directly from the job specs.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

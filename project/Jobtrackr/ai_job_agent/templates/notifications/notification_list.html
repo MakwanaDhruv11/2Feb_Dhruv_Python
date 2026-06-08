@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+
+{% block title %}Alert Center - AI Job Agent{% endblock %}
+
+{% block content %}
+<div class="row fade-in-up py-4">
+    <!-- Header -->
+    <div class="col-12 d-flex flex-wrap justify-content-between align-items-center mb-5">
+        <div>
+            <h1 class="fw-bold mb-1"><i class="bi bi-bell text-info me-2"></i> Alert Center</h1>
+            <p class="text-secondary mb-0">Manage system notifications, daily digest preferences, and career email logs</p>
+        </div>
+        {% if notifications %}
+            <div>
+                <form action="{% url 'notifications:notif_read_all' %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-custom"><i class="bi bi-envelope-open me-2"></i> Mark All as Read</button>
+                </form>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Notification Feed -->
+    <div class="col-lg-8 mb-4">
+        <h3 class="h5 fw-bold text-white mb-4"><i class="bi bi-chat-left-dots text-info me-2"></i> Feed</h3>
+        
+        {% if notifications %}
+            <div class="d-grid gap-3">
+                {% for notif in notifications %}
+                    <div class="glass-card p-4 {% if not notif.is_read %}border-info-glow{% endif %}" style="transition: border 0.3s ease;">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                                <h4 class="h6 fw-bold text-white mb-1">
+                                    {% if not notif.is_read %}
+                                        <span class="badge bg-info p-1.5 rounded-circle me-2 d-inline-block" style="width: 8px; height: 8px;" title="Unread"></span>
+                                    {% endif %}
+                                    {{ notif.title }}
+                                </h4>
+                                <span class="badge bg-secondary-subtle text-white border border-secondary text-capitalize px-2 py-0.5 rounded-pill" style="font-size: 0.65rem;">
+                                    {{ notif.get_notification_type_display }}
+                                </span>
+                            </div>
+                            <div class="d-flex align-items-center gap-3">
+                                <span class="text-secondary small">{{ notif.created_at|date:"M d, H:i" }}</span>
+                                {% if not notif.is_read %}
+                                    <form action="{% url 'notifications:notif_read' notif.pk %}" method="post" class="d-inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-link p-0 text-info text-decoration-none" title="Mark as Read"><i class="bi bi-check2"></i></button>
+                                    </form>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <p class="text-secondary small mb-0 mt-2">
+                            {{ notif.message }}
+                        </p>
+                    </div>
+                {% endfor %}
+            </div>
+            
+            <!-- Pagination -->
+            {% if is_paginated %}
+                <nav class="mt-5 d-flex justify-content-center">
+                    <ul class="pagination">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item"><a class="page-link bg-dark border-secondary text-info" href="?page=1">&laquo; First</a></li>
+                            <li class="page-item"><a class="page-link bg-dark border-secondary text-info" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
+                        {% endif %}
+                        <li class="page-item active">
+                            <span class="page-link bg-gradient border-0 text-white">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                        </li>
+                        {% if page_obj.has_next %}
+                            <li class="page-item"><a class="page-link bg-dark border-secondary text-info" href="?page={{ page_obj.next_page_number }}">Next</a></li>
+                            <li class="page-item"><a class="page-link bg-dark border-secondary text-info" href="?page={{ page_obj.paginator.num_pages }}">Last &raquo;</a></li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            {% endif %}
+            
+        {% else %}
+            <!-- Empty state -->
+            <div class="glass-card p-5 text-center">
+                <div class="rounded-circle bg-secondary d-inline-flex p-4 mb-4" style="background: rgba(255, 255, 255, 0.03) !important;">
+                    <i class="bi bi-bell-slash text-secondary fs-1"></i>
+                </div>
+                <h4 class="fw-bold text-white">Your Feed is Empty</h4>
+                <p class="text-secondary small">
+                    Notifications about job matches and automation steps will appear here.
+                </p>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Preferences sidebar -->
+    <div class="col-lg-4">
+        <div class="glass-card p-4">
+            <h3 class="h5 fw-bold text-white mb-4"><i class="bi bi-sliders text-info me-2"></i> Settings</h3>
+            
+            <form action="{% url 'notifications:notif_settings' %}" method="post">
+                {% csrf_token %}
+                <div class="mb-4">
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" role="switch" name="email_alerts" id="id_email_alerts" {% if settings.email_alerts %}checked{% endif %}>
+                        <label class="form-check-label text-white fw-bold small" for="id_email_alerts">Email Alerts</label>
+                        <div class="form-text text-secondary" style="font-size: 0.75rem;">Dispatches emails immediately when system notifications trigger.</div>
+                    </div>
+                    
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" role="switch" name="daily_digest" id="id_daily_digest" {% if settings.daily_digest %}checked{% endif %}>
+                        <label class="form-check-label text-white fw-bold small" for="id_daily_digest">Daily Digest</label>
+                        <div class="form-text text-secondary" style="font-size: 0.75rem;">Emails a daily summary containing newly discovered positions.</div>
+                    </div>
+                    
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" role="switch" name="job_alerts" id="id_job_alerts" {% if settings.job_alerts %}checked{% endif %}>
+                        <label class="form-check-label text-white fw-bold small" for="id_job_alerts">Job Match Notifications</label>
+                        <div class="form-text text-secondary" style="font-size: 0.75rem;">Alerts you when job match ratings calculate above 75%.</div>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn btn-gradient w-100 py-2">Save Preferences</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .border-info-glow {
+        border-color: rgba(6, 182, 212, 0.3) !important;
+        box-shadow: 0 0 10px rgba(6, 182, 212, 0.1);
+    }
+</style>
+{% endblock %}
