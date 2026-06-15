@@ -1,0 +1,39 @@
+{% extends 'profiles/base.html' %}
+
+{% block title %}Profile Dashboard{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <h2 style="margin: 0; font-weight: 600;">Central Dashboard</h2>
+        <div>
+            <a href="{% url 'export_profiles' %}" class="btn btn-outline" style="margin-right: 0.5rem;">Export CSV</a>
+            <a href="{% url 'create_profile' %}" class="btn">+ New Profile</a>
+        </div>
+    </div>
+
+    {% if profiles %}
+    <ul style="list-style: none; padding: 0; margin: 0;">
+        {% for profile in profiles %}
+        <li style="padding: 1rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <span style="font-weight: 600; font-size: 1.1rem;">{{ profile.username }}</span>
+                <span style="color: #94A3B8; margin-left: 0.5rem; font-size: 0.9rem;">Age: {{ profile.age }}</span>
+            </div>
+            <div>
+                {% if profile.is_public %}
+                <span style="background-color: rgba(16, 185, 129, 0.1); color: #10B981; padding: 0.25rem 0.5rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 500;">Public</span>
+                {% else %}
+                <span style="background-color: rgba(239, 68, 68, 0.1); color: #EF4444; padding: 0.25rem 0.5rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 500;">Private</span>
+                {% endif %}
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <div style="text-align: center; padding: 3rem 0; color: #94A3B8;">
+        <p>No profiles found. Create one to get started!</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

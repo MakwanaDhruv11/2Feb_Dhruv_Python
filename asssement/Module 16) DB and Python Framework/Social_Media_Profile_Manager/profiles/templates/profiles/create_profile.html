@@ -1,0 +1,67 @@
+{% extends 'profiles/base.html' %}
+
+{% block title %}Create Profile{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: center;">
+    <div class="card" style="width: 100%; max-width: 500px;">
+        <h2 style="margin-top: 0; margin-bottom: 1.5rem; font-weight: 600;">Create New Profile</h2>
+        
+        <form method="post" action="{% url 'create_profile' %}">
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+            <div style="background-color: rgba(239, 68, 68, 0.1); border-left: 4px solid var(--danger); padding: 1rem; margin-bottom: 1.5rem;">
+                <ul style="list-style: none; margin: 0; padding: 0; color: var(--danger);">
+                    {% for error in form.non_field_errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            <div class="form-group">
+                <label for="{{ form.username.id_for_label }}">Username</label>
+                {{ form.username }}
+                {% if form.username.errors %}
+                    <ul class="errorlist">
+                    {% for error in form.username.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.age.id_for_label }}">Age</label>
+                {{ form.age }}
+                {% if form.age.errors %}
+                    <ul class="errorlist">
+                    {% for error in form.age.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                    </ul>
+                {% endif %}
+                <small style="color: #94A3B8; display: block; margin-top: 0.25rem;">Must be 13 or older.</small>
+            </div>
+
+            <div class="form-group" style="display: flex; align-items: center; margin-bottom: 2rem;">
+                {{ form.is_public }}
+                <label for="{{ form.is_public.id_for_label }}" style="margin-bottom: 0; margin-left: 0.5rem;">Make Profile Public</label>
+                {% if form.is_public.errors %}
+                    <ul class="errorlist" style="margin-left: 1rem;">
+                    {% for error in form.is_public.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+
+            <div style="display: flex; justify-content: flex-end;">
+                <a href="{% url 'profile_list' %}" class="btn btn-outline" style="margin-right: 1rem;">Cancel</a>
+                <button type="submit" class="btn">Save Profile</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
