@@ -1,0 +1,209 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dhruv Makwana | Python Backend Developer</title>
+    <meta name="description" content="Portfolio of Dhruv Makwana, a Python Backend Developer turning ideas into reliable and efficient web applications.">
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Preloader -->
+    <div id="preloader">
+        <div class="loader-circle"></div>
+    </div>
+
+    <!-- Custom Cursor -->
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
+
+    <div class="bg-animated"></div>
+
+    <nav class="navbar glass">
+        <a href="#hero" class="premium-logo">
+            <span class="logo-mark">D</span>
+            <span class="logo-text">Makwana</span>
+        </a>
+        <ul class="nav-links">
+            <li><a href="#hero" class="nav-link active">Home</a></li>
+            <li><a href="#about" class="nav-link">About</a></li>
+            <li><a href="#skills" class="nav-link">Skills</a></li>
+            <li><a href="#projects" class="nav-link">Projects</a></li>
+            <li><a href="#education" class="nav-link">Education</a></li>
+            <li><a href="#contact" class="nav-link">Contact</a></li>
+        </ul>
+        <div class="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </nav>
+
+    <main>
+        <!-- Background D Logo -->
+        <div class="bg-logo-d">D</div>
+        <!-- Particles Container -->
+        <div id="particles"></div>
+        <section id="hero" class="hero-section">
+            <div class="hero-content reveal">
+                <p class="greeting">Hi, I am</p>
+                <h1 class="name">Dhruv Makwana</h1>
+                <h2 class="title">Python Backend Developer</h2>
+                <p class="tagline typewriter">Turning ideas into reliable and efficient web applications.</p>
+                <div class="hero-buttons">
+                    <a href="#projects" class="btn btn-primary magnetic">View Projects</a>
+                    <a href="https://drive.google.com/uc?export=download&id=1kR_EpU_lfqHb5HmDXGb6Jl7f8ezIy6b1" target="_blank" download="Dhruv_Makwana_Resume.pdf" class="btn btn-secondary magnetic"><i class="fa-solid fa-file-arrow-down"></i> Download Resume</a>
+                    <a href="#contact" class="btn btn-outline magnetic">Contact Me</a>
+                    <a href="https://wa.me/919099432835" target="_blank" class="btn btn-outline magnetic" style="color: #25D366; border-color: #25D366;"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
+                </div>
+            </div>
+            <div class="hero-visual reveal fade-right">
+                <div class="visual-placeholder glass magnetic">
+                    <div class="code-snippet">
+                        <span class="code-keyword">def</span> <span class="code-func">build_future</span>():<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">return</span> <span class="code-str">"Scalable APIs"</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="about" class="about-section">
+            <h2 class="section-title reveal">About Me</h2>
+            <div class="about-content glass reveal fade-up">
+                <p>I don't just learn technologies&mdash;I build with them. Whether it's creating REST APIs, designing database structures, or developing complete web applications, I enjoy transforming concepts into functional products that people can use.</p>
+                <p>My primary focus is Python backend development, where I work with Django, Django REST Framework, and MySQL to create efficient and scalable solutions. Recently, I developed a Fraud Detection System that strengthened my understanding of backend architecture, data processing, and real-world problem solving.</p>
+                <p>I believe that consistent learning and hands-on project development are the keys to becoming a better developer, which is why I am always working on new ideas and challenging myself with practical projects.</p>
+            </div>
+        </section>
+
+        <section id="skills" class="skills-section">
+            <h2 class="section-title reveal">Skills & Technologies</h2>
+            <div class="skills-grid">
+                <div class="skill-card glass reveal fade-up" style="--delay: 0.1s">
+                    <i class="devicon-python-plain colored"></i>
+                    <h3>Python</h3>
+                </div>
+                <div class="skill-card glass reveal fade-up" style="--delay: 0.2s">
+                    <i class="devicon-django-plain"></i>
+                    <h3>Django</h3>
+                </div>
+                <div class="skill-card glass reveal fade-up" style="--delay: 0.3s">
+                    <i class="fa-solid fa-cogs" style="color: #0ea5e9;"></i>
+                    <h3>Django REST Framework</h3>
+                </div>
+                <div class="skill-card glass reveal fade-up" style="--delay: 0.4s">
+                    <i class="devicon-mysql-plain colored"></i>
+                    <h3>MySQL</h3>
+                </div>
+                <div class="skill-card glass reveal fade-up" style="--delay: 0.5s">
+                    <i class="fa-solid fa-network-wired" style="color: #38bdf8;"></i>
+                    <h3>REST APIs</h3>
+                </div>
+                <div class="skill-card glass reveal fade-up" style="--delay: 0.6s">
+                    <i class="devicon-git-plain colored"></i>
+                    <h3>Git & GitHub</h3>
+                </div>
+            </div>
+        </section>
+
+        <section id="projects" class="projects-section">
+            <h2 class="section-title reveal">Featured Projects</h2>
+            <div class="projects-grid">
+                <div class="project-card glass reveal fade-up">
+                    <div class="project-image-placeholder">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+                    <div class="project-info">
+                        <h3>Fraud Detection System</h3>
+                        <p>Developed a Fraud Detection System designed to identify suspicious and potentially fraudulent activities using data-driven analysis. The application processes transaction data, applies detection logic, and provides insights to improve security and reduce risks.</p>
+                        <ul class="project-features">
+                            <li><i class="fa-solid fa-check"></i> Fraudulent transaction detection</li>
+                            <li><i class="fa-solid fa-check"></i> Secure authentication</li>
+                            <li><i class="fa-solid fa-check"></i> Data analysis dashboard</li>
+                            <li><i class="fa-solid fa-check"></i> Database integration</li>
+                            <li><i class="fa-solid fa-check"></i> Responsive interface</li>
+                        </ul>
+                        <div class="project-tags">
+                            <span>Python</span>
+                            <span>Django</span>
+                            <span>MySQL</span>
+                            <span>Machine Learning</span>
+                        </div>
+                        <div class="project-links">
+                            <a href="#" class="btn btn-outline magnetic"><i class="fa-brands fa-github"></i> GitHub</a>
+                            <a href="https://frauddetecter.pythonanywhere.com" target="_blank" rel="noopener noreferrer" class="btn btn-primary magnetic">🚀 Live Demo <i class="fa-solid fa-arrow-up-right-from-square" style="margin-left: 5px;"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="education" class="education-section">
+            <h2 class="section-title reveal">Education</h2>
+            <div class="timeline">
+                <div class="timeline-item glass reveal fade-right">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <h3>Diploma in Computer Engineering</h3>
+                        <h4><i class="fa-solid fa-building-columns" style="color: var(--accent-color); margin-right: 8px;"></i>Atmiya University</h4>
+                        <span class="date"><i class="fa-solid fa-location-dot" style="margin-right: 6px;"></i>Rajkot, Gujarat, India</span>
+                        <p style="margin-top: 1rem;">Developed a strong foundation in programming logic, database management, and backend development through practical coursework and project building.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="contact-section">
+            <h2 class="section-title reveal">Get In Touch</h2>
+            <div class="contact-container glass reveal fade-up">
+                <div class="direct-contact" style="text-align: center; margin-bottom: 2rem;">
+                    <p style="color: var(--text-secondary); margin-bottom: 0.5rem;">Or message me directly on WhatsApp:</p>
+                    <a href="https://wa.me/919099432835" target="_blank" style="color: #25D366; font-size: 1.5rem; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem;">
+                        <i class="fa-brands fa-whatsapp"></i> +91 9099432835
+                    </a>
+                </div>
+                <form class="contact-form modern-form">
+                    <div class="form-group floating-label">
+                        <input type="text" id="name" required placeholder=" ">
+                        <label for="name">Your Name</label>
+                    </div>
+                    <div class="form-group floating-label">
+                        <input type="email" id="email" required placeholder=" ">
+                        <label for="email">Your Email</label>
+                    </div>
+                    <div class="form-group floating-label">
+                        <textarea id="message" rows="5" required placeholder=" "></textarea>
+                        <label for="message">Your Message</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary magnetic submit-btn">
+                        <span>Send Message</span> <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content glass reveal fade-up">
+            <a href="#hero" class="premium-logo">
+                <span class="logo-mark">D</span>
+                <span class="logo-text">Makwana</span>
+            </a>
+            <p class="footer-text">Building the backends of tomorrow.</p>
+            <div class="social-links">
+                <a href="https://wa.me/919099432835" target="_blank" class="magnetic"><i class="fa-brands fa-whatsapp"></i></a>
+                <a href="#" class="magnetic"><i class="fa-brands fa-linkedin-in"></i></a>
+                <a href="#" class="magnetic"><i class="fa-brands fa-github"></i></a>
+                <a href="#" class="magnetic"><i class="fa-brands fa-twitter"></i></a>
+            </div>
+            <p class="copyright">&copy; 2026 Dhruv Makwana. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="{% static 'script.js' %}"></script>
+</body>
+</html>
